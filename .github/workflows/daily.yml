@@ -2,8 +2,8 @@ name: Daily Antwerpen Update
 
 on:
   schedule:
-    - cron: "0 7 * * *"    # elke dag 08:00 NL — ochtendeditie
-    - cron: "0 17 * * *"   # elke dag 18:00 NL — avondeditie
+    - cron: "0 6 * * *"    # 08:00 CET / 09:00 CEST (ochtend)
+    - cron: "0 16 * * *"   # 18:00 CET / 19:00 CEST (avond)
   workflow_dispatch: {}
 
 jobs:
@@ -18,8 +18,16 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Verstuur update naar Telegram
+      - name: Verstuur update naar Telegram (ochtend)
+        if: ${{ github.event.schedule == '0 6 * * *' }}
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
-        run: python antwerpen_bot.py
+        run: python antwerpen_bot.py ochtend
+
+      - name: Verstuur update naar Telegram (avond)
+        if: ${{ github.event.schedule != '0 6 * * *' }}
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python antwerpen_bot.py avond
