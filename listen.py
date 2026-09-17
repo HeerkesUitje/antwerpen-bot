@@ -118,11 +118,11 @@ def answer(text):
     if cmd == "/countdown":
         rest = (bot.TRIP_DATE - date.today()).days
         if rest > 1:
-            return f"Nog {rest} nachtjes slapen!"
+            return f"Nog {rest} nachtjes, meneer."
         if rest == 1:
-            return "MORGEN GAAT HET GEBEUREN!. 🚀"
+            return "MORGEN GAAT HET GEBEURDEN. 🚀"
         if rest == 0:
-            return "HET IS ZOVER. Let's GO! 🎉"
+            return "HET IS ZOVER. Waar blijf je? 🎉"
         return "Het weekend is geweest. Legendarisch. 🎲"
 
     if cmd == "/feit":
@@ -134,7 +134,7 @@ def answer(text):
         d = w["daily"]
         return f"☁️ Nu {c['temperature_2m']:.0f}°C (gevoel {c['apparent_temperature']:.0f}°C), max {d['temperature_2m_max'][0]:.0f}°C, regenkans {d['precipitation_probability_max'][0]}%"
 
-  if cmd == "/files":
+    if cmd == "/files":
         hits = get_antwerp_traffic()
         if hits == "config_fout":
             return "Feed-URL is niet geconfigureerd in de secrets."
