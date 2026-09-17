@@ -3,26 +3,25 @@ import os
 import random
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import date
+from datetime import datetime, timedelta
 
 import antwerpen_bot as bot   # hergebruikt FACTS, get_weather, etc.
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 FILES_FEED_URL = os.environ.get("FILES_FEED_URL", "")
-
-FILES_KEYWORDS = (
-    "Antwerpen", "Antwerp", "R1", "R2", "E19", "E313", "A12",
-    "Waasland", "Willebroek", "Lokeren", "Brecht",
-)
+OWNER_ID = 35520211   # Jouw Telegram-ID
 
 HELP_TEXT = (
     "Beschikbare commando's:\n"
-    "/countdown — nachtjes tot Antwerpen\n"
-    "/feit — weetje over de stad\n"
-    "/weer — actueel weer in 't Stad\n"
-    "/files — verkeershinder rond Antwerpen"
+    "/countdown — Nachtjes tot Antwerpen\n"
+    "/feit — Wiskundig feitje over de stad\n"
+    "/weer — Actueel weer in 't Stad\n"
+    "/files — Verkeershinder rond R1/R2\n"
+    "/nieuws — Actuele VRT-koppen\n"
+    "/bug — Meld een probleem aan Stan\n"
+    "/cafe — Random café-tip\n"
+    "/eet — Random eettip\n"
 )
-
 
 def tg(method, payload):
     req = urllib.request.Request(
@@ -32,7 +31,6 @@ def tg(method, payload):
     )
     with urllib.request.urlopen(req) as resp:
         return json.loads(resp.read())
-
 
 def get_antwerp_traffic():
     """Haalt DATEXII-feed op en filtert meldingen rond Antwerpen."""
@@ -48,9 +46,34 @@ def get_antwerp_traffic():
                 hits.append(text)
     return hits[:5]
 
+FILES_KEYWORDS = ("Antwerpen", "Antwerp", "R1", "R2", "E19", "E313", "A12")
+
+def get_news():
+    """VRT-nieuws: eerst Antwerpen, anders Vlaams."""
+    with urllib.request.urlopen(bot.RSS_URL, timeout=10) as resp:
+        tree = ET.fromstring(resp.read())
+    items = tree.findall(".//item")
+    antwerp = []
+    general = []
+    for i in items:
+        title = (i.findtext("title") or "").strip()
+        link = (i.findtext("link") or "").strip()
+        if not title:
+            continue
+        desc = i.findtext("description") or ""
+        entry = f"• {title}\n{link}"
+        if "antwerp" in (title + desc).lower() and len(antwerp) < 5:
+            antwerp.append(entry)
+        if len(general) < 5:
+            general.append(entry)
+    if antwerp:
+        return "\U0001F4F0 NIEUWS — REGIO ANTWERPEN\n\n" + "\n\n".join(antwerp[:3])
+    if general:
+        return "\U0001F4F0 NIEUWS — VLAANDEREN\n\n" + "\n\n".join(general[:3])
+    return "Nieuwsdienst lijkt plat. Rustig land, Vlaanderen."
 
 def answer(text):
-    """Vertaalt een commando naar een antwoord (of None)."""
+    """Vertaalt commando naar antwoord."""
     cmd = text.strip().split()[0].split("@")[0].lower()
 
     if cmd == "/countdown":
@@ -58,10 +81,10 @@ def answer(text):
         if rest > 1:
             return f"Nog {rest} nachtjes, meneer."
         if rest == 1:
-            return "MORGEN GAAT HET GEBEURDEN. \U0001F680"
+            return "MORGEN GAAT HET GEBEURDEN. 🚀"
         if rest == 0:
-            return "HET IS ZOVER. Waar blijf je? \U0001F389"
-        return "Het weekend is geweest. Legendarisch. \U0001F3B2"
+            return "HET IS ZOVER. Waar blijf je? 🎉"
+        return "Het weekend is geweest. Legendarisch. 🎲"
 
     if cmd == "/feit":
         return random.choice(bot.FACTS)
@@ -70,12 +93,7 @@ def answer(text):
         w = bot.get_weather()
         c = w["current"]
         d = w["daily"]
-        return (
-            f"\u2601 Nu {c['temperature_2m']:.0f}\u00B0C "
-            f"(gevoel {c['apparent_temperature']:.0f}\u00B0C), "
-            f"max {d['temperature_2m_max'][0]:.0f}\u00B0C, "
-            f"regenkans {d['precipitation_probability_max'][0]}%"
-        )
+        return f"☁️ Nu {c['temperature_2m']:.0f}°C (gevoel {c['apparent_temperature']:.0f}°C), max {d['temperature_2m_max'][0]:.0f}°C, regenkans {d['precipitation_probability_max'][0]}%"
 
     if cmd == "/files":
         hits = get_antwerp_traffic()
@@ -83,13 +101,24 @@ def answer(text):
             return "Geen verkeersfeed geconfigureerd. (Zie FILES_FEED_URL.)"
         if not hits:
             return "Geen meldingen rond Antwerpen. Uitzonderlijk rustig — of de sensoren slapen."
-        return "\U0001F6A6 VERKEERSHINDER ROND ANTWERPEN\n\n" + "\n".join(f"• {h}" for h in hits)
+        return "🚦 VERKEERSHINDER ROND ANTWERPEN\n\n" + "\n".join(f"• {h}" for h in hits)
+
+    if cmd == "/nieuws":
+        return get_news()
+
+    if cmd == "/bug":
+        return "🐞 Melding ontvangen.\n\nStan is geïnformeerd en kijkt er zo spoedig mogelijk naar.\nDe Heeren worden ondertussen verder ongestoord gelaten."
+
+    if cmd == "/cafe":
+        return f"🍻 TIP:\n{random.choice(bot.PUB_TIPS)}"
+
+    if cmd == "/eet":
+        return f"🍽️ TIP:\n{random.choice(bot.FOOD_TIPS)}"
 
     if cmd in ("/help", "/start"):
         return HELP_TEXT
 
     return None
-
 
 def main():
     with urllib.request.urlopen(
@@ -104,19 +133,27 @@ def main():
         text = (msg.get("text") or "").strip()
         if not text.startswith("/") or chat_id is None:
             continue
+        
         reply = answer(text)
+
+        # Bug-melding: privé naar Stan
+        if text.startswith("/bug"):
+            sender = msg.get("from", {}).get("first_name", "Onbekend")
+            ts = (datetime.utcnow() + timedelta(hours=2)).strftime("%H:%M")
+            tg("sendMessage", {
+                "chat_id": OWNER_ID,
+                "text": f"🐞 BUG-MELDING van {sender} ({ts}):\n\n{text}",
+            })
+
         if reply:
             tg("sendMessage", {"chat_id": chat_id, "text": reply})
             print(f"Beantwoord: {text!r} in chat {chat_id}")
 
     if updates:
-        # Bevestig verwerking: oudere updates worden server-side weggegooid,
-        # zodat de volgende run alleen nieuwe berichten ziet.
         last = updates[-1]["update_id"]
         urllib.request.urlopen(
             f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates?offset={last + 1}"
         )
-
 
 if __name__ == "__main__":
     main()
