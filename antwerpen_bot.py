@@ -7,13 +7,19 @@ import sys
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import date, datetime
-print(f"[DEBUG] CHAT_ID aanwezig: {'ja' if CHAT_ID else 'NEE'}")
+
 # ====== INSTELLINGEN ======
-TRIP_DATE = date(2026, 11, 27)   # <-- echte datum van jullie weekend!
+TRIP_DATE = date(2026, 11, 27)
 LAT, LON = 51.2194, 4.4025
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 CHAT_ID = os.environ.get("CHAT_ID", None)
 RSS_URL = "https://www.vrt.be/vrtnws/nl.rss.articles.xml"
+
+EVENING_HOUR = 16
+
+# Debug: check of CHAT_ID en BOT_TOKEN beschikbaar zijn
+print(f"[DEBUG] CHAT_ID aanwezig: {'ja' if CHAT_ID else 'NEE'}")
+print(f"[DEBUG] BOT_TOKEN aanwezig: {'ja' if BOT_TOKEN else 'NEE'}")
 
 HISTORY_FLASHBACKS = [
     "± 900-1000: de eerste vermeldingen van 'Andverpia' betreffen een nederzetting aan de Schelde. Een paar eeuwen later was het de rijkste stad van Noord-Europa. Kantooruren maken verschil.",
@@ -37,7 +43,7 @@ HISTORY_FLASHBACKS = [
     "17 augustus 1585: na dertien maanden beleg geeft Antwerpen zich over aan Alexander Farnese. Zeker de helft van de bevolking vertrekt noordwaarts. Geschiedkundigen beschouwen dit het startsein voor de Gouden Eeuw van Amsterdam. Antwerpen heeft er nooit een excuusbrief over ontvangen.",
     "1585-1795: de Schelde is vanaf de val van de stad gesloten voor zeevaart. Twee eeuwen stagnatie in één miliair besluit. Het is de meest import-export onevenwichtige beslissing uit de Europese geschiedenis.",
     "1599: Anthony van Dyck wordt in Antwerpen geboren. Op zijn twintigste is hij assistent van Rubens, op zijn eenentwintig meester zelf. Carrièresnelheid avant la lettre.",
-    "1610-1620: Rubens runt zijn atelier aan de Wapper met tientallen medewerkers, correspondeert met vorstenhuizen en onderhandelt als diplomaat. De werkgever van de zeventiende eeuw.",
+    "1610-1620: Rubens runt zijn atelier aan de Wapper met tientallen medewerkers, correspondert met vorstenhuizen en onderhandelt als diplomaat. De werkgever van de zeventiende eeuw.",
     "1637: Blaeu publiceert zijn kaart van Antwerpen in de grote stedenboeken van de Republiek. Antwerpen als noodgedwongen studie-object van de concurrerende republiek.",
     "1663: de Antwerpse Sint-Lucasgilde erkent ondertussen alleen het leerlingstelsel. Het corporatisme bestaat in de stad sinds zes eeuwen en overleeft alles — inclusief twee valperioden.",
     "1706: tijdens de Spaanse Successieoorlog trekken geallieerde troepen de stad binnen. Antwerpen wisselt de komende halve eeuw vier keer van soeverein. De administratie oefende destijds in agile werken.",
@@ -47,7 +53,7 @@ HISTORY_FLASHBACKS = [
     "1815-1830: onder het Verenigd Koninkrijk der Nederlanden wordt Antwerpen opnieuw een factor van formaat. Willem I investeert zwaar in de haven — een waarborg die in 1830 strategisch ongunstig uitpakte voor Den Haag.",
     "27 oktober 1830: de citadel van Antwerpen wordt door de Nederlanders ingenomen. Twee jaar blijft de stad in oorlogsstaat, tot het garnizoen zich in 1832 overgeeft aan het Franse leger. Onafhankelijkheid bleek een project met nasleep.",
     "1839: het Verdrag van Londen erkent België, en bevestigt tegelijk de vrijheid van de Schelde. Juridisch een vredesverdrag; commercieel een herstartmotor.",
-    "1863: Nederland en België schafpen eindelijk de Scheldetollen af. Antwerpen viert dit als nationale bevrijding — terecht, want hierna begint de moderne haven grootschalig te groeien.",
+    "1863: Nederland en België schaften eindelijk de Scheldetollen af. Antwerpen viert dit als nationale bevrijding — terecht, want hierna begint de moderne haven grootschalig te groeien.",
     "1885: de haven van Antwerpen passeert Rotterdam in tonnage voor het eerst in twee eeuwen. Teruggenomen omzet: de Rijnlandse economie herneemt haar historische logica.",
 ]
 
@@ -83,7 +89,7 @@ FACTS = [
     "Het Steen is het oudste gebouw van Antwerpen, daterend uit de dertiende eeuw. Het diende als middeleeuws burchtkasteel, gevangenis en museum. Momenteel vormt het een bezoekerscentrum voor de reizigers die de stad niet kennen.",
     "De mythische reus Antigoon eiste tol van schippers op de Schelde. De Romeinse held Silvius Brabo hakte de hand eraf en wierp die in de rivier. Economische dragers zijn er nooit van overtuigd.",
     "De echte naamverklaring van Antwerpen is echter archeologisch minder theatraal: 'aandewerpen', het land dat tegen de stroom in opgeworpen wordt. Wetenschap versus folklore: beide populair in de stad.",
-    "Het MAS is 62 meter hoog, telt tien verdiepingen en werd in 2011 geopend. Moderne architectuur in een stad die historische nevneren niet schuwt.",
+    "Het MAS is 62 meter hoog, telt tien verdiepingen en werd in 2011 geopend. Moderne architectuur in een stad die historische neveneren niet schuwt.",
     "Op de Groenplaats staat het standbeeld van Rubens, in 1843 onthuld. Rubens zelf was toen reeds 200 jaar overleden — snoeitraag, maar de begroeting is permanent.",
     "De Meir is een van de drukste winkelstraten van België. Het Koninklijk Paleis erlangs diende Napoleon, Willem I en Leopold II. Nu herbergt het een winkel: evolutie heet dat.",
     "Napoleon liet in Antwerpen dokken en pakhuizen bouwen voor zijn geplande invasie van Engeland. De scheepswerven bestaan nog; de invasie is nooit gekomen.",
@@ -92,7 +98,7 @@ FACTS = [
     "Het Sportpaleis behoort tot de grootste indoorarena's van Europa en wordt wereldwijd als podiumpartner voor artiesten gerespecteerd.",
     "Antwerpen telt inwoners uit meer dan 170 nationaliteiten. Superdiversiteit als sociaal-demografische realiteit — niet als campagne-slogan.",
     "De stad heeft ruim 530.000 inwoners, het grootste stedelijke gebied van België inclusief Antwerpen-Noord? De agglomeratie steekt boven de miljoen.",
-    "Antwerpen meet 204 vierkante kilometer — inclusief haveninfrastructuur die zelf een stad kaninken zou kunnen herbergen.",
+    "Antwerpen meet 204 vierkante kilometer — inclusief haveninfrastructuur die zelf een stad kan herbergen.",
     "Antwerpenaren heten 'Sinjoren', een verbastering van het Spaanse 'señores'. Volgens de Nederlanders is dat al te gek; volgens de Sinjoren zelf is het verdiend.",
     "Het symbool van de stad is de hand — terug te vinden in sokkels, koekjes en sermoenen. Eén hand geworpen, eeuwenlang hergebruikt.",
     "In het Nationaal Scheepvaartmuseum (in het Steen-omgeving geopend) wordt de havenhistorie uitgestald, van houten koggeschip tot containerschip.",
@@ -132,7 +138,8 @@ FOOD_TIPS = [
     "Het bolleke-glas van De Koninck (1833) kent geen. Herkenbaar op elk terras in de stad.",
     "Elixir d'Anvers (1863): ooit medicijn, nu likeur. Werking nooit bewezen, verkoop nooit stilgevallen.",
     "Mosselen komen uit Zeeland, friet uit de Westhoek. België claimt de combinatie — en terecht.",
-    "Brabo hakte de hand van een tolgaarder af. Antwerpen tegen riviertollen: een familietraditie.",]
+    "Brabo hakte de hand van een tolgaarder af. Antwerpen tegen riviertollen: een familietraditie.",
+]
 
 QUOTES_MORNING = [
     "Goedemorgen. Nog even doorbijten, het bier wacht.",
@@ -199,6 +206,10 @@ def get_antwerp_news():
 
 
 def send_message(text):
+    if not CHAT_ID:
+        print("[ERROR] CHAT_ID ontbreekt! Kan geen bericht sturen.")
+        return False
+    
     payload = json.dumps({"chat_id": CHAT_ID, "text": text}).encode("utf-8")
     req = urllib.request.Request(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
@@ -208,8 +219,8 @@ def send_message(text):
     with urllib.request.urlopen(req) as resp:
         result = json.loads(resp.read())
     print(f"Telegram response: {result['ok']}")
-print(f"[DEBUG] Bericht verstuurd naar chat {CHAT_ID}")
-
+    print(f"[DEBUG] Bericht verstuurd naar chat {CHAT_ID}")
+    return True
 
 
 def pick_theme(countdown_days):
@@ -285,6 +296,10 @@ def build_evening(weather, theme, countdown):
 
 def send_photo(path, caption):
     """Verstuurt een echte foto met bijschrift naar de groep."""
+    if not CHAT_ID:
+        print("[ERROR] CHAT_ID ontbreekt! Kan geen foto sturen.")
+        return False
+        
     boundary = "----AntwerpenBot123"
     filename = os.path.basename(path)
     content_type = mimetypes.guess_type(path)[0] or "image/jpeg"
@@ -312,12 +327,14 @@ def send_photo(path, caption):
         result = json.loads(resp.read())
     print(f"Foto verzonden: {result['ok']}")
     
+
 if __name__ == "__main__":
     now = datetime.now().hour
-if len(sys.argv) > 1:
-    is_evening = sys.argv[1].strip().lower() in ("avond", "evening")
-else:
-    is_evening = now >= 18
+    if len(sys.argv) > 1:
+        is_evening = sys.argv[1].strip().lower() in ("avond", "evening")
+    else:
+        is_evening = now >= 18
+    
     countdown = (TRIP_DATE - date.today()).days
     theme = pick_theme(countdown)
     weather = get_weather()
