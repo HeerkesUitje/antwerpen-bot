@@ -11,6 +11,7 @@ import antwerpen_bot as bot   # hergebruikt FACTS, get_weather, etc.
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 FILES_FEED_URL = os.environ.get("FILES_FEED_URL", "")
 OWNER_ID = 35520211   # Jouw Telegram-ID
+FILES_KEYWORDS = ("Antwerpen", "Antwerp", "R1", "R2", "E19", "E313", "A12", "E34", "E17")
 
 HELP_TEXT = (
     "Beschikbare commando's:\n"
