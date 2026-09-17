@@ -31,9 +31,6 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python antwerpen_bot.py avond
-
-      - name: Test alarm
-        run: exit 1
         
       - name: Telegram-melding bij falen
         if: failure()
