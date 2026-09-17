@@ -3,7 +3,8 @@ import os
 import random
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 import antwerpen_bot as bot   # hergebruikt FACTS, get_weather, etc.
 
@@ -139,7 +140,7 @@ def main():
         # Bug-melding: privé naar Stan
         if text.startswith("/bug"):
             sender = msg.get("from", {}).get("first_name", "Onbekend")
-            ts = (datetime.utcnow() + timedelta(hours=2)).strftime("%H:%M")
+            ts = datetime.now(ZoneInfo("Europe/Brussels")).strftime("%H:%M")
             tg("sendMessage", {
                 "chat_id": OWNER_ID,
                 "text": f"🐞 BUG-MELDING van {sender} ({ts}):\n\n{text}",
