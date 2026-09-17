@@ -61,13 +61,26 @@ def get_antwerp_traffic():
     if not FILES_FEED_URL:
         return "config_fout"
 
+    import time
+    xml_data = None
+    for poging in range(3):
+        try:
+            req = urllib.request.Request(
+                FILES_FEED_URL,
+                headers={"User-Agent": "AntwerpenTripBot/1.0 (vriendengroep)"},
+            )
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                xml_data = resp.read()
+            break   # gelukt, uit de herhalingslus
+        except Exception as e:
+            print(f"[DEBUG] Poging {poging + 1} mislukt: {e}")
+            time.sleep(10)   # even ademhalen en nog eens proberen
+
+    if xml_data is None:
+        return "fetch_fout"
+
     try:
-        req = urllib.request.Request(
-            FILES_FEED_URL,
-            headers={"User-Agent": "AntwerpenTripBot/1.0 (vriendengroep)"},
-        )
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            tree = ET.fromstring(resp.read())
+        tree = ET.fromstring(xml_data)
 
         # Lambert 72-boundingbox rond Antwerpen (R1, R2, havens, noord- en zuidrand)
         XMIN, XMAX = 138000, 164000
