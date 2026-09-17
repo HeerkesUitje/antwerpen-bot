@@ -192,6 +192,7 @@ def build_evening(weather, theme, countdown):
         f"\U0001F327 FEITJE VAN DE DAG",
         f"{random.choice(FACTS)}",
         "",
+    ]
     parts += [
         "",
         "\U0001F4DC EEN GESCHIEDENISWEETJE",
