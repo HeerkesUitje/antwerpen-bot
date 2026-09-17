@@ -80,11 +80,11 @@ def answer(text):
     if cmd == "/countdown":
         rest = (bot.TRIP_DATE - date.today()).days
         if rest > 1:
-            return f"Nog {rest} nachtjes, meneer."
+            return f"Nog {rest} nachtjes slapen!"
         if rest == 1:
-            return "MORGEN GAAT HET GEBEURDEN. 🚀"
+            return "MORGEN GAAT HET GEBEUREN!. 🚀"
         if rest == 0:
-            return "HET IS ZOVER. Waar blijf je? 🎉"
+            return "HET IS ZOVER. Let's GO! 🎉"
         return "Het weekend is geweest. Legendarisch. 🎲"
 
     if cmd == "/feit":
