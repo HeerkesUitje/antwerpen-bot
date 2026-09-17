@@ -51,29 +51,25 @@ def get_antwerp_traffic():
         print(f"[DEBUG] Feed opgehaald: {len(xml_data)} bytes")
         tree = ET.fromstring(xml_data)
 
-        # DIAGNOSE: laat zien wat de feed aan tekst bevat
-        texts = [(elem.tag, (elem.text or "").strip()) for elem in tree.iter()]
-        texts = [(tag, t) for tag, t in texts if len(t) > 5]
-        texts.sort(key=lambda x: len(x[1]), reverse=True)
-        print(f"[DEBUG] Aantal tekst-elementen: {len(texts)}")
-        for tag, t in texts[:10]:
-            print(f"[DEBUG] ({len(t)} tekens) <{tag}>: {t[:120]}")
-
-        # DIAGNOSE: check ook attributen (DATEXII stopt soms tekst daar)
-        attr_hits = 0
+        # DIAGNOSE: unieke tagnaam-statistiek
+        tag_counts = {}
         for elem in tree.iter():
-            for value in elem.attrib.values():
-                if len(value) > 5 and any(k.lower() in value.lower() for k in FILES_KEYWORDS):
-                    attr_hits += 1
-                    if attr_hits <= 3:
-                        print(f"[DEBUG] ATTRIBUUT-MATCH: {value[:120]}")
-        print(f"[DEBUG] Attribuut-hits: {attr_hits}")
+            naam = elem.tag.split("}")[-1]   # namespace strippen
+            tag_counts[naam] = tag_counts.get(naam, 0) + 1
+        print(f"[DEBUG] Unieke tagnamen: {len(tag_counts)}")
+        for naam, n in sorted(tag_counts.items(), key=lambda x: -x[1])[:25]:
+            print(f"[DEBUG] TAG: <{naam}> x{n}")
 
-        hits = []
-        for tag, t in texts:
-            if len(t) > 20 and any(k.lower() in t.lower() for k in FILES_KEYWORDS):
-                if t not in hits:
-                    hits.append(t)
+        # DIAGNOSE: korte en middellange teksten (niet-coördinaten)
+        sample = []
+        for elem in tree.iter():
+            t = (elem.text or "").strip()
+            if 10 <= len(t) <= 300 and "," not in t[:20] and "." not in t[:12]:
+                naam = elem.tag.split("}")[-1]
+                sample.append((naam, t))
+        print(f"[DEBUG] Korte/middellange teksten: {len(sample)}")
+        for naam, t in sample[:20]:
+            print(f"[DEBUG] <{naam}>: {t[:120]}")
 
         print(f"[DEBUG] Hits gevonden: {len(hits)}")
         return hits[:5] if hits else []
