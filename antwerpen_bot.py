@@ -7,7 +7,7 @@ import sys
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import date, datetime
-
+print(f"[DEBUG] CHAT_ID aanwezig: {'ja' if CHAT_ID else 'NEE'}")
 # ====== INSTELLINGEN ======
 TRIP_DATE = date(2026, 11, 27)   # <-- echte datum van jullie weekend!
 LAT, LON = 51.2194, 4.4025
@@ -208,6 +208,8 @@ def send_message(text):
     with urllib.request.urlopen(req) as resp:
         result = json.loads(resp.read())
     print(f"Telegram response: {result['ok']}")
+print(f"[DEBUG] Bericht verstuurd naar chat {CHAT_ID}")
+
 
 
 def pick_theme(countdown_days):
