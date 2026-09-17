@@ -6,6 +6,9 @@ on:
     - cron: "0 16 * * *"   # 18:00 CET / 19:00 CEST (avond)
   workflow_dispatch: {}
 
+- name: Test alarm
+run: exit 1
+
 jobs:
   send-update:
     runs-on: ubuntu-latest
