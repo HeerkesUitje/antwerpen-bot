@@ -212,19 +212,17 @@ def build_morning(weather, news, theme, countdown):
     current = weather["current"]
     daily = weather["daily"]
     if countdown > 1:
-        countdown_text = f"Nog {countdown} nachtjes slapen! \U0001F389"
+        countdown_text = f"Nog {countdown} nachtjes slapen! 🎉"
     elif countdown == 1:
-        countdown_text = "MORGEN GAAT HET GEBEURDEN! \U0001F680"
+        countdown_text = "MORGEN GAAT HET GEBEURDEN! 🚀"
     else:
-        countdown_text = "HET IS ZOVER! \U0001F389\U0001F389\U0001F389"
+        countdown_text = "HET IS ZOVER! 🎉🎉🎉"
 
     parts = [
         f"\U0001F305 OCHTENDEDITIE — ANTWERPEN UPDATE",
         f"{'=' * 21}",
         f"",
-        f"{theme[0]}: {theme[1]}",
-        f"",
-        f"{countdown_text}",
+        countdown_text,
         "",
         f"\U000026C5 HET WEER",
         f"Nu {current['temperature_2m']:.0f}\u00B0C "
@@ -242,27 +240,33 @@ def build_morning(weather, news, theme, countdown):
     parts += ["", f"\U0001F44B {random.choice(QUOTES_MORNING)}"]
     return "\n".join(parts)
 
-
 def build_evening(weather, theme, countdown):
     current = weather["current"]
     tip = random.choice(PUB_TIPS + FOOD_TIPS)
+    
+    if countdown > 1:
+        countdown_text = f"Nog {countdown} nachtjes slapen! 🎉"
+    elif countdown == 1:
+        countdown_text = "MORGEN GAAT HET GEBEURDEN! 🚀"
+    else:
+        countdown_text = "HET IS ZOVER! 🎉🎉🎉"
+
     parts = [
         f"\U0001F319 AVONDEDITIE — ANTWERPEN UPDATE",
         f"{'=' * 21}",
         f"",
+        countdown_text,
+        "",
         f"{theme[0]}: {theme[1]}",
         f"",
         f"\U0001F37A TIP VAN DE AVOND",
         f"{tip}",
         "",
-        f"\U0001F327 FEITJE VAN DE DAG",
+        f"\U0001F4A1 FEITJE VAN DE DAG",
         f"{random.choice(FACTS)}",
         "",
-    ]
-    parts += [
-        "",
-        "\U0001F4DC EEN GESCHIEDENISWEETJE",
-        random.choice(HISTORY_FLASHBACKS),
+        f"\U0001F4DC GESCHIEDENIS HERHAALT ZICH",
+        f"{random.choice(HISTORY_FLASHBACKS)}",
         "",
         f"\U0001F44B {random.choice(QUOTES_EVENING)}",
     ]
