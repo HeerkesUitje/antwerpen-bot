@@ -14,7 +14,7 @@ OWNER_ID = 35520211   # Jouw Telegram-ID
 HELP_TEXT = (
     "Beschikbare commando's:\n"
     "/countdown — Nachtjes tot Antwerpen\n"
-    "/feit — Wiskundig feitje over de stad\n"
+    "/feit — Leuk feitje over de stad\n"
     "/weer — Actueel weer in 't Stad\n"
     "/files — Verkeershinder rond R1/R2\n"
     "/nieuws — Actuele VRT-koppen\n"
