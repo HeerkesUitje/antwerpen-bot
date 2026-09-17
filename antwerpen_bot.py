@@ -15,8 +15,6 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 CHAT_ID = os.environ.get("CHAT_ID", None)
 RSS_URL = "https://www.vrt.be/vrtnws/nl.rss.articles.xml"
 
-EVENING_HOUR = 16   # na 16:00 NL-tijd geldt het bericht als avondeditie
-
 HISTORY_FLASHBACKS = [
     "± 900-1000: de eerste vermeldingen van 'Andverpia' betreffen een nederzetting aan de Schelde. Een paar eeuwen later was het de rijkste stad van Noord-Europa. Kantooruren maken verschil.",
     "1291: Antwerpen ontvangt stadsrechten. Het archief is bewaard gebleven — beter dan menige jaarploeg van de Antwerpse brandweer later presteerde.",
@@ -314,7 +312,10 @@ def send_photo(path, caption):
     
 if __name__ == "__main__":
     now = datetime.now().hour
-    is_evening = int(sys.argv[1]) >= EVENING_HOUR if len(sys.argv) > 1 else now >= 18
+if len(sys.argv) > 1:
+    is_evening = sys.argv[1].strip().lower() in ("avond", "evening")
+else:
+    is_evening = now >= 18
     countdown = (TRIP_DATE - date.today()).days
     theme = pick_theme(countdown)
     weather = get_weather()
