@@ -36,38 +36,33 @@ def tg(method, payload):
 def get_antwerp_traffic():
     """Haalt DATEXII-feed op en filtert meldingen rond Antwerpen."""
     if not FILES_FEED_URL:
-        return None
-    
+        print("[DEBUG] FILES_FEED_URL is leeg in de omgeving")
+        return "config_fout"
+
     try:
-        with urllib.request.urlopen(FILES_FEED_URL, timeout=15) as resp:
+        req = urllib.request.Request(
+            FILES_FEED_URL,
+            headers={"User-Agent": "AntwerpenTripBot/1.0 (vriendengroep)"},
+        )
+        with urllib.request.urlopen(req, timeout=30) as resp:
             xml_data = resp.read()
-        
-        # Debug: eerste 500 karakters van de feed
-        print(f"[DEBUG] XML voorbeeld:\n{xml_data[:500].decode('utf-8', errors='ignore')}")
-        
+
+        print(f"[DEBUG] Feed opgehaald: {len(xml_data)} bytes")
         tree = ET.fromstring(xml_data)
+
         hits = []
-        
-        # Debug: tellen hoeveel elementen we hebben
-        all_elements = list(tree.iter())
-        print(f"[DEBUG] Totaal aantal XML-elementen in feed: {len(all_elements)}")
-        
-        # Filter op tekst met onze keywords
         for elem in tree.iter():
             text = (elem.text or "").strip()
-            if len(text) > 10 and any(k.lower() in text.lower() for k in FILES_KEYWORDS):
-                print(f"[DEBUG] MATCH: {text[:100]}")  # Print treffer
+            if len(text) > 20 and any(k.lower() in text.lower() for k in FILES_KEYWORDS):
                 if text not in hits:
                     hits.append(text)
-        
-        print(f"[DEBUG] Aantal hits gevonden: {len(hits)}")
-        print(f"[DEBUG] Hits: {hits[:5]}")
-        
-        return hits[:5]
-        
+
+        print(f"[DEBUG] Hits gevonden: {len(hits)}")
+        return hits[:5] if hits else []
+
     except Exception as e:
-        print(f"[DEBUG] Fout bij ophalen feeds: {e}")
-        return None
+        print(f"[DEBUG] Feed ophalen MISLUKT: {e}")
+        return "fetch_fout"
 
 def get_news():
     """VRT-nieuws: eerst Antwerpen, anders Vlaams."""
@@ -118,11 +113,13 @@ def answer(text):
 
     if cmd == "/files":
         hits = get_antwerp_traffic()
-        if hits is None:
-            return "Geen verkeersfeed geconfigureerd. (Zie FILES_FEED_URL.)"
+        if hits == "config_fout":
+            return "Feed-URL is niet geconfigureerd in de secrets."
+        if hits == "fetch_fout":
+            return "Verkeersfeed kon niet worden opgehaald. Stan kijkt in de logs."
         if not hits:
             return "Geen meldingen rond Antwerpen. Uitzonderlijk rustig — of de sensoren slapen."
-        return "🚦 VERKEERSHINDER ROND ANTWERPEN\n\n" + "\n".join(f"• {h}" for h in hits)
+        return "\U0001F6A6 VERKEERSHINDER ROND ANTWERPEN\n\n" + "\n".join(f"• {h}" for h in hits)
 
     if cmd == "/nieuws":
         return get_news()
