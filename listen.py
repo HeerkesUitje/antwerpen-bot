@@ -34,10 +34,26 @@ def tg(method, payload):
     with urllib.request.urlopen(req) as resp:
         return json.loads(resp.read())
 
+TYPE_NL = {
+    "newRoadworksLayout": "nieuwe wegenindeling (werkzone)",
+    "narrowLanes": "vernauwde rijstroken",
+    "laneClosure": "rijstrook afgesloten",
+    "roadworks": "wegenwerken",
+    "intermittentShortTermRoadworks": "kortdurende wegenwerken",
+    "roadMarkingWork": "wegmarkeringwerken",
+    "resurfacing": "herstel wegdek",
+    "singleAlternateLineTraffic": "om de beurt één rijstrook beschikbaar",
+    "obstruction": "obstakel op de weg",
+    "maintenanceWorks": "onderhoudswerken",
+    "speedReduction": "verlaagde maximumsnelheid",
+}
+
+def _tag(elem):
+    return elem.tag.split("}")[-1]
+
 def get_antwerp_traffic():
-    """Haalt DATEXII-feed op en filtert meldingen rond Antwerpen."""
+    """DATEXII-feed: filtert situaties rond Antwerpen via Lambert 72-coördinaten."""
     if not FILES_FEED_URL:
-        print("[DEBUG] FILES_FEED_URL is leeg in de omgeving")
         return "config_fout"
 
     try:
@@ -46,42 +62,49 @@ def get_antwerp_traffic():
             headers={"User-Agent": "AntwerpenTripBot/1.0 (vriendengroep)"},
         )
         with urllib.request.urlopen(req, timeout=30) as resp:
-            xml_data = resp.read()
+            tree = ET.fromstring(resp.read())
 
-        print(f"[DEBUG] Feed opgehaald: {len(xml_data)} bytes")
-        tree = ET.fromstring(xml_data)
+        # Lambert 72-boundingbox rond Antwerpen (R1, R2, havens, noord- en zuidrand)
+        XMIN, XMAX = 138000, 164000
+        YMIN, YMAX = 194000, 222000
 
-        # Scan alle elementen, incl. diepere lagen
-        hits = []
-        for elem in tree.iter():
-            naam = elem.tag.split("}")[-1]
-            text = (elem.text or "").strip()
-            
-            # Skip technische metadata (tijden, coördinaten)
-            if naam in ("publicationTime", "situationVersionTime", "situationRecordCreationTime", 
-                       "overallStartTime", "overallEndTime", "posList", "offsetDistance"):
+        items = []
+        for sit in tree.iter():
+            if _tag(sit) != "situation":
                 continue
-            
-            # Check tekstinhoud
-            if len(text) >= 15 and any(k.lower() in text.lower() for k in FILES_KEYWORDS):
-                if text not in hits:
-                    hits.append(f"<{naam}>: {text}")
 
-        print(f"[DEBUG] Tekst-hits gevonden: {len(hits)}")
-        for h in hits[:10]:
-            print(f"[DEBUG] {h}")
+            xs, ys = [], []
+            for el in sit.iter():
+                if _tag(el.tag) == "posList" and el.text:
+                    try:
+                        nums = [float(v) for v in el.text.split()]
+                    except ValueError:
+                        continue
+                    xs += nums[0::2]
+                    ys += nums[1::2]
 
-        if not hits:
-            # Fall-back: scan ALLE teksten ongeacht tag
-            all_text_hits = []
-            for elem in tree.iter():
-                text = (elem.text or "").strip()
-                if len(text) >= 10 and any(k.lower() in text.lower() for k in FILES_KEYWORDS):
-                    all_text_hits.append(text[:100])
-            print(f"[DEBUG] Fall-back hits: {len(all_text_hits)}")
-            return list(set(all_text_hits))[:5] if all_text_hits else []
+            # Binnen de box rond Antwerpen?
+            if not any(XMIN <= x <= XMAX and YMIN <= y <= YMAX for x, y in zip(xs, ys)):
+                continue
 
-        return hits[:5] if hits else []
+            types, endtime = set(), None
+            for el in sit.iter():
+                t = (el.text or "").strip()
+                if _tag(el) == "overallEndTime" and t:
+                    endtime = t[:10]
+                elif t and t[0].islower():          # enum-waarden zijn camelCase
+                    types.add(TYPE_NL.get(t, t))
+
+            if not types:
+                types = {"melding"}
+
+            for t in sorted(types):
+                entry = "• " + t + (f" (loopt t/m {endtime})" if endtime else "")
+                if entry not in items:
+                    items.append(entry)
+
+        print(f"[DEBUG] Antwerpse situaties gevonden: {len(items)}")
+        return items[:5]
 
     except Exception as e:
         print(f"[DEBUG] Feed ophalen MISLUKT: {e}")
