@@ -147,7 +147,11 @@ def main():
             })
 
         if reply:
-            tg("sendMessage", {"chat_id": chat_id, "text": reply})
+            tg("sendMessage", {
+                "chat_id": chat_id,
+                "text": reply,
+                "reply_to_message_id": msg.get("message_id"),  # ← nieuw
+            })
             print(f"Beantwoord: {text!r} in chat {chat_id}")
 
     if updates:
