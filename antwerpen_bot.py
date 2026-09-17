@@ -12,7 +12,7 @@ from datetime import date, datetime
 TRIP_DATE = date(2026, 11, 27)   # <-- echte datum van jullie weekend!
 LAT, LON = 51.2194, 4.4025
 BOT_TOKEN = os.environ["BOT_TOKEN"]
-CHAT_ID = os.environ["CHAT_ID"]
+CHAT_ID = os.environ.get("CHAT_ID", None)
 RSS_URL = "https://www.vrt.be/vrtnws/nl.rss.articles.xml"
 
 EVENING_HOUR = 16   # na 16:00 NL-tijd geldt het bericht als avondeditie
