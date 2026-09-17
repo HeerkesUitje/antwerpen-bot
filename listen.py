@@ -51,12 +51,29 @@ def get_antwerp_traffic():
         print(f"[DEBUG] Feed opgehaald: {len(xml_data)} bytes")
         tree = ET.fromstring(xml_data)
 
-        hits = []
+        # DIAGNOSE: laat zien wat de feed aan tekst bevat
+        texts = [(elem.tag, (elem.text or "").strip()) for elem in tree.iter()]
+        texts = [(tag, t) for tag, t in texts if len(t) > 5]
+        texts.sort(key=lambda x: len(x[1]), reverse=True)
+        print(f"[DEBUG] Aantal tekst-elementen: {len(texts)}")
+        for tag, t in texts[:10]:
+            print(f"[DEBUG] ({len(t)} tekens) <{tag}>: {t[:120]}")
+
+        # DIAGNOSE: check ook attributen (DATEXII stopt soms tekst daar)
+        attr_hits = 0
         for elem in tree.iter():
-            text = (elem.text or "").strip()
-            if len(text) > 20 and any(k.lower() in text.lower() for k in FILES_KEYWORDS):
-                if text not in hits:
-                    hits.append(text)
+            for value in elem.attrib.values():
+                if len(value) > 5 and any(k.lower() in value.lower() for k in FILES_KEYWORDS):
+                    attr_hits += 1
+                    if attr_hits <= 3:
+                        print(f"[DEBUG] ATTRIBUUT-MATCH: {value[:120]}")
+        print(f"[DEBUG] Attribuut-hits: {attr_hits}")
+
+        hits = []
+        for tag, t in texts:
+            if len(t) > 20 and any(k.lower() in t.lower() for k in FILES_KEYWORDS):
+                if t not in hits:
+                    hits.append(t)
 
         print(f"[DEBUG] Hits gevonden: {len(hits)}")
         return hits[:5] if hits else []
