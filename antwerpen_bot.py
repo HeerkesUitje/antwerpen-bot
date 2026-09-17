@@ -345,8 +345,26 @@ if __name__ == "__main__":
         news = get_antwerp_news()
         message = build_morning(weather, news, theme, countdown)
 
+    # Print het bericht in de log
     print(message)
-    send_message(message)
+    
+    # Haal lijst van chats op uit secret (fallback naar enkel CHAT_ID voor compatibiliteit)
+    multi_ids = os.environ.get("MULTI_CHAT_IDS", "[]")
+    import json
+    try:
+        chat_ids = json.loads(multi_ids)
+    except:
+        chat_ids = [CHAT_ID] if CHAT_ID else []
+    
+    # Verstuur naar alle chats
+    if not chat_ids:
+        print("[ERROR] Geen chat-IDs geconfigureerd! Controleer MULTI_CHAT_IDS secret.")
+    else:
+        for cid in chat_ids:
+            print(f"[DEBUG] Verstuur naar chat {cid}...")
+            send_message(message)
+    
+    # Foto versturen (alleen naar eerste chat om spam te vermijden)
     photos = glob.glob("*.jpg")
-    if photos and random.random() < 0.5:   # 50% kans op een terugblik-foto
+    if photos and chat_ids and random.random() < 0.5:
         send_photo(random.choice(photos), "📸 TERUGBLIK om bij vooruit te kijken :)")
