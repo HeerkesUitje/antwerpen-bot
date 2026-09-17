@@ -108,7 +108,7 @@ FACTS = [
 
 # Wekelijkse thema's, automatisch gekozen op basis van de countdown
 THEMES = {
-    4: ("🏛️ GESCHIEDENIS WEEK", "Van Rubens tot de Schelde-legende van Brabo."),
+    4: ("🏛️ GESCHIEDENIS WEEK", "Van Rubens tot de legende van Silvius Brabo."),
     3: ("🍺 UITGAAN WEEK", "Cafés, bier en nachtelijke avonturen in 't Stad."),
     2: ("🍽️ ETEN WEEK", "Frietjes, stoofvlees, frikandellen. De échte haute cuisine."),
     1: ("🧳 PRAKTISCHE WEEK", "Tassen pakken, regelen, aftellen."),
@@ -126,11 +126,15 @@ PUB_TIPS = [
 
 FOOD_TIPS = [
     "Frituur n°1 van Antwerpen — vraag de locals welke dat is. Discussies gegarandeerd.",
-    "Frites Atnoon bij het Centraal Station: vers uit de frituur.",
+    "De Barak aan de Linkeroever heeft de beste frites!",
     "Fish a'gogo: visgerechten met een ziel, vlak bij de kaaien.",
     "Exki is toeristenvoer. Skip. Ga voor een echt frituur.",
     "Balls & Glory op de Kloosterstraat: gehaktballen als kunstvorm.",
-]
+    "Het Antwerpse handje verwijst naar de hand van Silvius Brabo. Eén mythe, oneindig bakvormen.",
+    "Het bolleke-glas van De Koninck (1833) kent geen. Herkenbaar op elk terras in de stad.",
+    "Elixir d'Anvers (1863): ooit medicijn, nu likeur. Werking nooit bewezen, verkoop nooit stilgevallen.",
+    "Mosselen komen uit Zeeland, friet uit de Westhoek. België claimt de combinatie — en terecht.",
+    "Brabo hakte de hand van een tolgaarder af. Antwerpen tegen riviertollen: een familietraditie.",]
 
 QUOTES_MORNING = [
     "Goedemorgen. Nog even doorbijten, het bier wacht.",
@@ -139,7 +143,7 @@ QUOTES_MORNING = [
     "Vandaag is ook weer een dag dichter bij iets dat de moeite waard is.",
     "Wie heeft er al gecheckt of Pim nog leeft? Categorietje onderweg.",
     "Is Machiel al hardlopend vertrokken? Wie checkt zijn tussentijden?",
-    "Erik: check je even je navigatie dat je niet naar Brugge rijdt ;-)",
+    "Erik: check je even je navigatie ;-)",
     "JP: we zitten vlakbij water. Ik houd je handje wel vast ;-)",
     "Goedemorgen! Zijn de eitjes al gebakken, Anton?",
 ]
@@ -310,4 +314,4 @@ if __name__ == "__main__":
     send_message(message)
     photos = glob.glob("*.jpg")
     if photos and random.random() < 0.5:   # 50% kans op een terugblik-foto
-        send_photo(random.choice(photos), "📸 TERUGBLIK — eentje uit de oude doos :)")
+        send_photo(random.choice(photos), "📸 TERUGBLIK om bij vooruit te kijken :)")
