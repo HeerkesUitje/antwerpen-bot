@@ -17,17 +17,32 @@ RSS_URL = "https://www.vrt.be/vrtnws/nl.rss.articles.xml"
 
 EVENING_HOUR = 16   # na 16:00 NL-tijd geldt het bericht als avondeditie
 
+HISTORY_FLASHBACKS = [
+    "1576: de Spaanse Furie. Antwerpen geplunderd, honderden doden. Nooit excuses gekregen.",
+    "1584-85: het Beleg van Antwerpen. Vijf maanden volgehouden, toen Parma de Schelde dichtgooide. 400 jaar klagen over de tol daarna. Klagen is hier een ambacht.",
+    "1609: Plantijn drukte al boeken voor half Europa. De eerste die bewees dat Antwerpen commercieel noch cultureel terugdeinst voor een monopoliepositie.",
+    "1662: een speculant steekt de Stadsbibliotheek in brand. Begrafenisstoet, goud en zilver, alles ging in vlammen op.",
+    "1794-95: de Fransen nemen de haven, de antifranse patriottenclaim zakt in. Twee eeuwen later doen bankiers in diamant nog steeds zaken in drie talen tegelijk.",
+    "1830: de Belgen schudden de Hollanders af. De Schelde eindelijk tol-vrij. Rotterdam heeft het ze nooit vergeven.",
+    "1894-1905: het Centraal Station wordt gebouwd bovenop een verdieping sloopwerk. Categorie 'ambitie boven functionaliteit' was toen al uitgevonden.",
+    "1914: het Belgische leger verschanst zich rond Antwerpen, kijkt toe hoe de Duitsers oprukken. Uiteindelijk weg. Zonder verlies, zonder winst. Typisch gematigd België.",
+    "1940: Vliegtuigbommen op Antwerpen, mei 1940. Even later volgt het park. De wederopbouw nam 20 jaar. Niets nieuws onder de Schelde-zon.",
+    "1944-45: V-bommen op Antwerpen raken meer dan 5.000 burgers. Havenhouders bleven. Antwerpen bleef. Dat mag gezegd worden.",
+    "1920: de Olympische Spelen in Antwerpen, inclusief rugslagzwemmen en zwak eetfestijn. Nadien: wereldverbeteraars, betere atleten, en 106 jaar discussie.",
+]
+
 FACTS = [
-    "Het Centraal Station werd in 2009 uitgeroepen tot het mooiste treinstation ter wereld.",
-    "Antwerpen heeft de oudste dierentuin van Europa: de ZOO van 1843.",
-    "De haven van Antwerpen is de tweede grootste van Europa.",
-    "Rubens woonde hier — zijn huis is nu een prachtig museum.",
-    "Antwerpen is de diamantstad: 84% van 's werelds ruwe diamanten passeert hier.",
-    "Het woord 'handswerpen' (hand werpen) zou de oorsprong van de naam zijn.",
-    "De Onze-Lieve-Vrouwetoren is de hoogste kerktoren van de Lage Landen.",
-    "De Sint-Annatunnel onder de Schelde is een Art-Deco juweeltje.",
-    "In 't Zuid huizen de meeste galeries en vintage winkels van de stad.",
-    "Op de Groenplaats stond ooit het Sint-Elisabethziekenhuis; nu staat er Rubens.",
+    "Categorietje 'hè, leeft die nog?!': Rubens. Sinds 1640. Nog steeds niet tegen te houden.",
+    "Antwerpen viel in 1585, en de Amsterdamse zakenwereld heeft sindsdien een dankbriefje tegoed. Sommige dingen veranderen nooit.",
+    "De ZOO van Antwerpen bestaat sinds 1843. Dat was van onze markten nog lang niet verbrand.",
+    "84% van 's werelds ruwe diamanten passeert Antwerpen. Verzorger van de Rijnlandse economie, sinds eeuwen.",
+    "De Onze-Lieve-Vrouwetoren: 123 meter, al 500 jaar hoogste kerktoren van de Lage Landen. Zonder één stremming.",
+    "Categorietje 'Sommige dingen veranderen nooit': de prijs van een Duvel in het Grand Café van Antwerpen.",
+    "De haven van Antwerpen is de op één na grootste van Europa. Rotterdam staat eerste, maar daar praten we vanavond niet over.",
+    "Brabo wierp de reuzenhand in de Schelde. Waarschijnlijk de oudste geregistreerde testcase van 'handhaven'.",
+    "Antwerpen verwelkomde in de jaren '70 de hippie-scene, maar de stad overleefde dat keurig. Zoals alles.",
+    "Er is in Antwerpen ooit een grootschalige overstroming geweest in de 16e eeuw. Ook toen werd de spoor'service' niet beter.",
+]
 ]
 
 # Wekelijkse thema's, automatisch gekozen op basis van de countdown
@@ -57,17 +72,25 @@ FOOD_TIPS = [
 ]
 
 QUOTES_MORNING = [
-    "Goedemorgen — de koffie smaakt beter met een countdown.",
-    "Nog even doorbijten, het bier wacht.",
-    "Vandaag is ook weer een dag dichter bij Antwerpen.",
-    "Wie doet er al afwaswerk voor de koelbox?",
+    "Goedemorgen. Nog even doorbijten, het bier wacht.",
+    "Vandaag is het transatlantische nieuws waarschijnlijk weer debiel, maar wij gaan naar Antwerpen!",
+    "Sommige dingen veranderen nooit. Gelukkig het bier ook niet.",
+    "Vandaag is ook weer een dag dichter bij iets dat de moeite waard is.",
+    "Wie heeft er al gecheckt of Pim nog leeft? Categorietje onderweg.",
+    "Is Machiel al hardlopend vertrokken? Wie checkt zijn tussentijden?",
+    "Erik: check je even je navigatie dat je niet naar Brugge rijdt ;-)",
+    "JP: we zitten vlakbij water. Ik houd je handje wel vast ;-)",
+    "Goedemorgen! Zijn de eitjes al gebakken, Anton?",
 ]
 
 QUOTES_EVENING = [
-    "Vanavond borrel je ergens anders. Zonde.",
+    "Vanavond borrel je ergens anders. Geen BOB nodig.",
     "Nog X nachtjes — euh sorry, nog even volhouden.",
     "Droom maar lekker van handjes en frietjes.",
-    "De barman van je dromen heet Boris en schenkt Westmalle.",
+    "De barman van je dromen heet Guy en schenkt Westmalle.",
+    "Heeft iemand al gecheckt of June Peers in de stad is?",
+    "Be less like Tom Waes: biertje bij aankomst, niet onderweg!",
+    "Helaas bestaat de Zillion niet meer, maar we kunnen vast ergens anders feesten!",
 ]
 
 
@@ -169,6 +192,11 @@ def build_evening(weather, theme, countdown):
         "",
         f"\U0001F327 FEITJE VAN DE DAG",
         f"{random.choice(FACTS)}",
+        "",
+    parts += [
+        "",
+        "\U0001F4DC EEN GESCHIEDENISWEETJE",
+        random.choice(HISTORY_FLASHBACKS),
         "",
         f"\U0001F44B {random.choice(QUOTES_EVENING)}",
     ]
