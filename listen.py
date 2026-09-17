@@ -75,7 +75,7 @@ def get_antwerp_traffic():
 
             xs, ys = [], []
             for el in sit.iter():
-                if _tag(el.tag) == "posList" and el.text:
+                if _tag(el) == "posList" and el.text:
                     try:
                         nums = [float(v) for v in el.text.split()]
                     except ValueError:
