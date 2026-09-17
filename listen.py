@@ -37,17 +37,37 @@ def get_antwerp_traffic():
     """Haalt DATEXII-feed op en filtert meldingen rond Antwerpen."""
     if not FILES_FEED_URL:
         return None
-    with urllib.request.urlopen(FILES_FEED_URL, timeout=15) as resp:
-        tree = ET.fromstring(resp.read())
-    hits = []
-    for elem in tree.iter():
-        text = (elem.text or "").strip()
-        if len(text) > 20 and any(k in text for k in FILES_KEYWORDS):
-            if text not in hits:
-                hits.append(text)
-    return hits[:5]
-
-FILES_KEYWORDS = ("Antwerpen", "Antwerp", "R1", "R2", "E19", "E313", "A12")
+    
+    try:
+        with urllib.request.urlopen(FILES_FEED_URL, timeout=15) as resp:
+            xml_data = resp.read()
+        
+        # Debug: eerste 500 karakters van de feed
+        print(f"[DEBUG] XML voorbeeld:\n{xml_data[:500].decode('utf-8', errors='ignore')}")
+        
+        tree = ET.fromstring(xml_data)
+        hits = []
+        
+        # Debug: tellen hoeveel elementen we hebben
+        all_elements = list(tree.iter())
+        print(f"[DEBUG] Totaal aantal XML-elementen in feed: {len(all_elements)}")
+        
+        # Filter op tekst met onze keywords
+        for elem in tree.iter():
+            text = (elem.text or "").strip()
+            if len(text) > 10 and any(k.lower() in text.lower() for k in FILES_KEYWORDS):
+                print(f"[DEBUG] MATCH: {text[:100]}")  # Print treffer
+                if text not in hits:
+                    hits.append(text)
+        
+        print(f"[DEBUG] Aantal hits gevonden: {len(hits)}")
+        print(f"[DEBUG] Hits: {hits[:5]}")
+        
+        return hits[:5]
+        
+    except Exception as e:
+        print(f"[DEBUG] Fout bij ophalen feeds: {e}")
+        return None
 
 def get_news():
     """VRT-nieuws: eerst Antwerpen, anders Vlaams."""
