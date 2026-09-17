@@ -172,11 +172,12 @@ def get_weather():
 
 
 def get_antwerp_news():
-    """Haalt VRT-nieuws op en filtert op artikelen over Antwerpen."""
+    """Haalt VRT-nieuws op: voorkeur voor Antwerpen, anders Vlaams terugval-artikel."""
     try:
         with urllib.request.urlopen(RSS_URL, timeout=10) as resp:
             tree = ET.fromstring(resp.read())
         items = tree.findall(".//item")
+
         hits = [
             (i.findtext("title", "").strip(), i.findtext("link", "").strip())
             for i in items
@@ -184,6 +185,16 @@ def get_antwerp_news():
         ]
         if hits:
             return random.choice(hits)
+
+        # Geen Antwerps nieuws vandaag: val terug op een algemeen artikel
+        all_items = [
+            (i.findtext("title", "").strip(), i.findtext("link", "").strip())
+            for i in items
+            if i.findtext("title", "").strip()
+        ]
+        if all_items:
+            return random.choice(all_items)
+
     except Exception as e:
         print(f"Nieuws ophalen mislukt: {e}")
     return None
