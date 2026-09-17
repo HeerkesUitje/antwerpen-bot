@@ -43,7 +43,6 @@ FACTS = [
     "Antwerpen verwelkomde in de jaren '70 de hippie-scene, maar de stad overleefde dat keurig. Zoals alles.",
     "Er is in Antwerpen ooit een grootschalige overstroming geweest in de 16e eeuw. Ook toen werd de spoor'service' niet beter.",
 ]
-]
 
 # Wekelijkse thema's, automatisch gekozen op basis van de countdown
 THEMES = {
