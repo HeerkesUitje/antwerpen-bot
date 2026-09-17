@@ -46,6 +46,11 @@ TYPE_NL = {
     "obstruction": "obstakel op de weg",
     "maintenanceWorks": "onderhoudswerken",
     "speedReduction": "verlaagde maximumsnelheid",
+    "trafficCongestion": "verkeersopstopping",
+    "accident": "ongeval",
+    "emergencyVehicle": "hulpvoertuig aanwezig",
+    "roadClosed": "weg gesloten",
+    "allLanesClosed": "alle rijstroken afgesloten",
 }
 
 def _tag(elem):
@@ -75,36 +80,43 @@ def get_antwerp_traffic():
 
             xs, ys = [], []
             for el in sit.iter():
-                if _tag(el) == "posList" and el.text:
+                t = _tag(el)
+                if t == "posList" and el.text:
                     try:
                         nums = [float(v) for v in el.text.split()]
+                        xs += nums[0::2]
+                        ys += nums[1::2]
                     except ValueError:
                         continue
-                    xs += nums[0::2]
-                    ys += nums[1::2]
 
             # Binnen de box rond Antwerpen?
             if not any(XMIN <= x <= XMAX and YMIN <= y <= YMAX for x, y in zip(xs, ys)):
                 continue
 
-            types, endtime = set(), None
+            # Zoek de verkeerstypes uit specifieke tags
+            types, endtime = [], None
             for el in sit.iter():
+                tagname = _tag(el)
                 t = (el.text or "").strip()
-                if _tag(el) == "overallEndTime" and t:
+
+                if tagname == "overallEndTime" and t:
                     endtime = t[:10]
-                elif t and t[0].islower():          # enum-waarden zijn camelCase
-                    types.add(TYPE_NL.get(t, t))
+                elif tagname in ("roadOrCarriagewayOrLaneManagementType", 
+                                "abnormalTrafficType",
+                                "trafficSourceType",
+                                "genericSituationType"):
+                    if t and t in TYPE_NL:
+                        types.append(TYPE_NL[t])
 
             if not types:
-                types = {"melding"}
+                continue  # Skip situaties zonder type
 
-            for t in sorted(types):
+            for t in sorted(set(types)):
                 entry = "• " + t + (f" (loopt t/m {endtime})" if endtime else "")
                 if entry not in items:
                     items.append(entry)
 
-        print(f"[DEBUG] Antwerpse situaties gevonden: {len(items)}")
-        return items[:5]
+        return items[:5] if items else []
 
     except Exception as e:
         print(f"[DEBUG] Feed ophalen MISLUKT: {e}")
