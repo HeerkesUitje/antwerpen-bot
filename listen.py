@@ -51,27 +51,36 @@ def get_antwerp_traffic():
         print(f"[DEBUG] Feed opgehaald: {len(xml_data)} bytes")
         tree = ET.fromstring(xml_data)
 
-        # DIAGNOSE: unieke tagnaam-statistiek
-        tag_counts = {}
+        # Scan alle elementen, incl. diepere lagen
+        hits = []
         for elem in tree.iter():
-            naam = elem.tag.split("}")[-1]   # namespace strippen
-            tag_counts[naam] = tag_counts.get(naam, 0) + 1
-        print(f"[DEBUG] Unieke tagnamen: {len(tag_counts)}")
-        for naam, n in sorted(tag_counts.items(), key=lambda x: -x[1])[:25]:
-            print(f"[DEBUG] TAG: <{naam}> x{n}")
+            naam = elem.tag.split("}")[-1]
+            text = (elem.text or "").strip()
+            
+            # Skip technische metadata (tijden, coördinaten)
+            if naam in ("publicationTime", "situationVersionTime", "situationRecordCreationTime", 
+                       "overallStartTime", "overallEndTime", "posList", "offsetDistance"):
+                continue
+            
+            # Check tekstinhoud
+            if len(text) >= 15 and any(k.lower() in text.lower() for k in FILES_KEYWORDS):
+                if text not in hits:
+                    hits.append(f"<{naam}>: {text}")
 
-        # DIAGNOSE: korte en middellange teksten (niet-coördinaten)
-        sample = []
-        for elem in tree.iter():
-            t = (elem.text or "").strip()
-            if 10 <= len(t) <= 300 and "," not in t[:20] and "." not in t[:12]:
-                naam = elem.tag.split("}")[-1]
-                sample.append((naam, t))
-        print(f"[DEBUG] Korte/middellange teksten: {len(sample)}")
-        for naam, t in sample[:20]:
-            print(f"[DEBUG] <{naam}>: {t[:120]}")
+        print(f"[DEBUG] Tekst-hits gevonden: {len(hits)}")
+        for h in hits[:10]:
+            print(f"[DEBUG] {h}")
 
-        print(f"[DEBUG] Hits gevonden: {len(hits)}")
+        if not hits:
+            # Fall-back: scan ALLE teksten ongeacht tag
+            all_text_hits = []
+            for elem in tree.iter():
+                text = (elem.text or "").strip()
+                if len(text) >= 10 and any(k.lower() in text.lower() for k in FILES_KEYWORDS):
+                    all_text_hits.append(text[:100])
+            print(f"[DEBUG] Fall-back hits: {len(all_text_hits)}")
+            return list(set(all_text_hits))[:5] if all_text_hits else []
+
         return hits[:5] if hits else []
 
     except Exception as e:
@@ -125,7 +134,7 @@ def answer(text):
         d = w["daily"]
         return f"☁️ Nu {c['temperature_2m']:.0f}°C (gevoel {c['apparent_temperature']:.0f}°C), max {d['temperature_2m_max'][0]:.0f}°C, regenkans {d['precipitation_probability_max'][0]}%"
 
-    if cmd == "/files":
+  if cmd == "/files":
         hits = get_antwerp_traffic()
         if hits == "config_fout":
             return "Feed-URL is niet geconfigureerd in de secrets."
