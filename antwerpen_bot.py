@@ -172,7 +172,35 @@ def build_evening(weather, theme, countdown):
     ]
     return "\n".join(parts)
 
+def send_photo(path, caption):
+    """Verstuurt een echte foto met bijschrift naar de groep."""
+    boundary = "----AntwerpenBot123"
+    filename = os.path.basename(path)
+    content_type = mimetypes.guess_type(path)[0] or "image/jpeg"
+    with open(path, "rb") as f:
+        filedata = f.read()
 
+    body = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="chat_id"\r\n\r\n'
+        f"{CHAT_ID}\r\n"
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="caption"\r\n\r\n'
+        f"{caption}\r\n"
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="photo"; filename="{filename}"\r\n'
+        f"Content-Type: {content_type}\r\n\r\n"
+    ).encode("utf-8") + filedata + f"\r\n--{boundary}--\r\n".encode("utf-8")
+
+    req = urllib.request.Request(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto",
+        data=body,
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+    )
+    with urllib.request.urlopen(req) as resp:
+        result = json.loads(resp.read())
+    print(f"Foto verzonden: {result['ok']}")
+    
 if __name__ == "__main__":
     now = datetime.now().hour
     is_evening = int(sys.argv[1]) >= EVENING_HOUR if len(sys.argv) > 1 else now >= 18
@@ -188,3 +216,6 @@ if __name__ == "__main__":
 
     print(message)
     send_message(message)
+    photos = glob.glob("*.jpg")
+    if photos and random.random() < 0.5:   # 50% kans op een terugblik-foto
+        send_photo(random.choice(photos), "📸 TERUGBLIK — eentje uit de oude doos :)")
