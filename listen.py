@@ -9,16 +9,13 @@ from zoneinfo import ZoneInfo
 import antwerpen_bot as bot   # hergebruikt FACTS, get_weather, etc.
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
-FILES_FEED_URL = os.environ.get("FILES_FEED_URL", "")
 OWNER_ID = 35520211   # Jouw Telegram-ID
-FILES_KEYWORDS = ("Antwerpen", "Antwerp", "R1", "R2", "E19", "E313", "A12", "E34", "E17")
 
 HELP_TEXT = (
     "Beschikbare commando's:\n"
     "/countdown — Nachtjes tot Antwerpen\n"
     "/feit — Leuk feitje over de stad\n"
     "/weer — Actueel weer in 't Stad\n"
-    "/files — Verkeershinder rond R1/R2\n"
     "/nieuws — Actuele VRT-koppen\n"
     "/bug — Meld een probleem aan Stan\n"
     "/cafe — Random café-tip\n"
@@ -56,89 +53,9 @@ TYPE_NL = {
 def _tag(elem):
     return elem.tag.split("}")[-1]
 
-def get_antwerp_traffic():
-    """DATEXII-feed: filtert situaties rond Antwerpen via Lambert 72-coördinaten."""
-    if not FILES_FEED_URL:
-        return "config_fout"
-
-    import time
-    xml_data = None
-    for poging in range(3):
-        try:
-            req = urllib.request.Request(
-                FILES_FEED_URL,
-                headers={"User-Agent": "AntwerpenTripBot/1.0 (vriendengroep)"},
-            )
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                xml_data = resp.read()
-            break   # gelukt, uit de herhalingslus
-        except Exception as e:
-            print(f"[DEBUG] Poging {poging + 1} mislukt: {e}")
-            time.sleep(10)   # even ademhalen en nog eens proberen
-
-    if xml_data is None:
-        return "fetch_fout"
-
-    try:
-        tree = ET.fromstring(xml_data)
-
-        # Lambert 72-boundingbox rond Antwerpen (R1, R2, havens, noord- en zuidrand)
-        XMIN, XMAX = 138000, 164000
-        YMIN, YMAX = 194000, 222000
-
-        items = []
-        for sit in tree.iter():
-            if _tag(sit) != "situation":
-                continue
-
-            xs, ys = [], []
-            for el in sit.iter():
-                t = _tag(el)
-                if t == "posList" and el.text:
-                    try:
-                        nums = [float(v) for v in el.text.split()]
-                        xs += nums[0::2]
-                        ys += nums[1::2]
-                    except ValueError:
-                        continue
-
-            # Binnen de box rond Antwerpen?
-            if not any(XMIN <= x <= XMAX and YMIN <= y <= YMAX for x, y in zip(xs, ys)):
-                continue
-
-            # Zoek de verkeerstypes uit specifieke tags
-            types, endtime = [], None
-            for el in sit.iter():
-                tagname = _tag(el)
-                t = (el.text or "").strip()
-
-                if tagname == "overallEndTime" and t:
-                    endtime = t[:10]
-                elif tagname in ("roadOrCarriagewayOrLaneManagementType", 
-                                "abnormalTrafficType",
-                                "trafficSourceType",
-                                "genericSituationType"):
-                    if t and t in TYPE_NL:
-                        types.append(TYPE_NL[t])
-
-            if not types:
-                continue  # Skip situaties zonder type
-
-            for t in sorted(set(types)):
-                entry = "• " + t + (f" (loopt t/m {endtime})" if endtime else "")
-                if entry not in items:
-                    items.append(entry)
-
-        return items[:5] if items else []
-
-    except Exception as e:
-        print(f"[DEBUG] Feed ophalen MISLUKT: {e}")
-        return "fetch_fout"
-
 def _local(tag):
     """Namespace strippen: '{http://...}entry' -> 'entry'"""
     return tag.rsplit('}', 1)[-1]
-
 
 def get_news():
     """VRT-nieuws: eerst Antwerpen, anders Vlaams. Werkt voor RSS én Atom."""
@@ -219,16 +136,6 @@ def answer(text):
         c = w["current"]
         d = w["daily"]
         return f"☁️ Nu {c['temperature_2m']:.0f}°C (gevoel {c['apparent_temperature']:.0f}°C), max {d['temperature_2m_max'][0]:.0f}°C, regenkans {d['precipitation_probability_max'][0]}%"
-
-    if cmd == "/files":
-        hits = get_antwerp_traffic()
-        if hits == "config_fout":
-            return "Feed-URL is niet geconfigureerd in de secrets."
-        if hits == "fetch_fout":
-            return "Verkeersfeed kon niet worden opgehaald. Stan kijkt in de logs."
-        if not hits:
-            return "Geen meldingen rond Antwerpen. Uitzonderlijk rustig — of de sensoren slapen."
-        return "\U0001F6A6 VERKEERSHINDER ROND ANTWERPEN\n\n" + "\n".join(f"• {h}" for h in hits)
 
     if cmd == "/nieuws":
         return get_news()
