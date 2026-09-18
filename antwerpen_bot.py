@@ -154,7 +154,7 @@ QUOTES_MORNING = [
 ]
 
 QUOTES_EVENING = [
-    "Vanavond borrel je ergens anders. Geen BOB nodig.",
+    "In Antwerpen borrelen we lokaal. Geen BOB nodig.",
     "Nog X nachtjes — euh sorry, nog even volhouden.",
     "Droom maar lekker van handjes en frietjes.",
     "De barman van je dromen heet Guy en schenkt Westmalle.",
