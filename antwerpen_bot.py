@@ -179,31 +179,55 @@ def get_weather():
 def get_antwerp_news():
     """Haalt VRT-nieuws op: voorkeur voor Antwerpen, anders Vlaams terugval-artikel."""
     try:
+        print("[DEBUG] Nieuwsfeed ophalen...")
         with urllib.request.urlopen(RSS_URL, timeout=10) as resp:
-            tree = ET.fromstring(resp.read())
-        items = tree.findall(".//item")
-
-        hits = [
-            (i.findtext("title", "").strip(), i.findtext("link", "").strip())
-            for i in items
-            if "antwerp" in (i.findtext("title", "") + i.findtext("description", "")).lower()
+            xml_content = resp.read()
+        
+        print(f"[DEBUG] XML ontvangen: {len(xml_content)} bytes")
+        
+        # Dump eerste 500 karakters van de XML (om structuur te zien)
+        print(f"[DEBUG] XML preview:\n{xml_content[:500].decode('utf-8', errors='ignore')}")
+        
+        # Eenvoudige tekst-zoekopdracht (geen XML-parsing, want namespaces kunnen mislukken)
+        xml_str = xml_content.decode("utf-8", errors="ignore").lower()
+        
+        # Zoek naar alle <title>-blokken met regex
+        import re
+        titles = []
+        for match in re.finditer(r"<title>([^<]+)</title>", xml_str):
+            title = match.group(1).strip()
+            # Filter technische titles
+            if len(title) > 10 and "vrt" not in title.lower() and "rss" not in title.lower():
+                titles.append(title)
+        
+        print(f"[DEBUG] Totaal aantal titels gevonden: {len(titles)}")
+        print(f"[DEBUG] Eerste 5 titels:")
+        for t in titles[:5]:
+            print(f"[DEBUG]   • {t}")
+        
+        # Filter op Antwerpen (NL én EN, case insensitive)
+        antwerp_titles = [
+            t for t in titles 
+            if any(k in t.lower() for k in ["antwerpen", "antwerp"])
         ]
-        if hits:
-            return random.choice(hits)
-
-        # Geen Antwerps nieuws vandaag: val terug op een algemeen artikel
-        all_items = [
-            (i.findtext("title", "").strip(), i.findtext("link", "").strip())
-            for i in items
-            if i.findtext("title", "").strip()
-        ]
-        if all_items:
-            return random.choice(all_items)
-
+        
+        print(f"[DEBUG] Antwerpse titels gevonden: {len(antwerp_titles)}")
+        for t in antwerp_titles[:3]:
+            print(f"[DEBUG]   • {t}")
+        
+        if antwerp_titles:
+            choice = random.choice(antwerp_titles)
+            return f"• {choice}"
+        
+        # Geen Antwerps nieuws vandaag: val terug op eerste geldig artikel
+        if titles:
+            print(f"[DEBUG] Geen Antwerps nieuws, val terug op: {titles[0]}")
+            return f"• {titles[0]}"
+        
     except Exception as e:
-        print(f"Nieuws ophalen mislukt: {e}")
+        print(f"[DEBUG] Nieuws ophalen MISLUKT: {e}")
+    
     return None
-
 
 def send_message(text, target_chat=None):
     chat = target_chat or CHAT_ID
