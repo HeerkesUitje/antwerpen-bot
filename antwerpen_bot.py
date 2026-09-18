@@ -205,12 +205,13 @@ def get_antwerp_news():
     return None
 
 
-def send_message(text):
-    if not CHAT_ID:
-        print("[ERROR] CHAT_ID ontbreekt! Kan geen bericht sturen.")
+def send_message(text, target_chat=None):
+    chat = target_chat or CHAT_ID
+    if not chat:
+        print("[ERROR] Geen chat-ID bekend! Kan geen bericht sturen.")
         return False
-    
-    payload = json.dumps({"chat_id": CHAT_ID, "text": text}).encode("utf-8")
+
+    payload = json.dumps({"chat_id": chat, "text": text}).encode("utf-8")
     req = urllib.request.Request(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
         data=payload,
@@ -219,7 +220,7 @@ def send_message(text):
     with urllib.request.urlopen(req) as resp:
         result = json.loads(resp.read())
     print(f"Telegram response: {result['ok']}")
-    print(f"[DEBUG] Bericht verstuurd naar chat {CHAT_ID}")
+    print(f"[DEBUG] Bericht verstuurd naar chat {chat}")
     return True
 
 
@@ -345,26 +346,28 @@ if __name__ == "__main__":
         news = get_antwerp_news()
         message = build_morning(weather, news, theme, countdown)
 
-    # Print het bericht in de log
+     # Print het bericht in de log
     print(message)
-    
-    # Haal lijst van chats op uit secret (fallback naar enkel CHAT_ID voor compatibiliteit)
-    multi_ids = os.environ.get("MULTI_CHAT_IDS", "[]")
-    import json
+
+    # Chat-lijst opbouwen: MULTI_CHAT_IDS + CHAT_ID als vangnet
+    multi_raw = os.environ.get("MULTI_CHAT_IDS", "")
+    print(f"[DEBUG] MULTI_CHAT_IDS ontvangen: {multi_raw!r}")
     try:
-        chat_ids = json.loads(multi_ids)
-    except:
-        chat_ids = [CHAT_ID] if CHAT_ID else []
-    
-    # Verstuur naar alle chats
+        chat_ids = json.loads(multi_raw) if multi_raw else []
+    except Exception as e:
+        print(f"[DEBUG] MULTI_CHAT_IDS is geen geldige JSON: {e}")
+        chat_ids = []
+
+    if CHAT_ID and CHAT_ID not in chat_ids:
+        chat_ids.append(CHAT_ID)
+
     if not chat_ids:
-        print("[ERROR] Geen chat-IDs geconfigureerd! Controleer MULTI_CHAT_IDS secret.")
+        print("[ERROR] Geen chat-IDs geconfigureerd!")
     else:
         for cid in chat_ids:
-            print(f"[DEBUG] Verstuur naar chat {cid}...")
-            send_message(message)
-    
-    # Foto versturen (alleen naar eerste chat om spam te vermijden)
+            send_message(message, target_chat=str(cid))
+
+    # Foto versturen
     photos = glob.glob("*.jpg")
     if photos and chat_ids and random.random() < 0.5:
         send_photo(random.choice(photos), "📸 TERUGBLIK om bij vooruit te kijken :)")
