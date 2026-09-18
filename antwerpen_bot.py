@@ -295,12 +295,13 @@ def build_evening(weather, theme, countdown):
     ]
     return "\n".join(parts)
 
-def send_photo(path, caption):
-    """Verstuurt een echte foto met bijschrift naar de groep."""
-    if not CHAT_ID:
-        print("[ERROR] CHAT_ID ontbreekt! Kan geen foto sturen.")
+def send_photo(path, caption, target_chat=None):
+    """Verstuurt een echte foto met bijschrift naar een chat."""
+    chat = target_chat or CHAT_ID
+    if not chat:
+        print("[ERROR] Geen chat-ID bekend! Kan geen foto sturen.")
         return False
-        
+
     boundary = "----AntwerpenBot123"
     filename = os.path.basename(path)
     content_type = mimetypes.guess_type(path)[0] or "image/jpeg"
@@ -310,7 +311,7 @@ def send_photo(path, caption):
     body = (
         f"--{boundary}\r\n"
         f'Content-Disposition: form-data; name="chat_id"\r\n\r\n'
-        f"{CHAT_ID}\r\n"
+        f"{chat}\r\n"
         f"--{boundary}\r\n"
         f'Content-Disposition: form-data; name="caption"\r\n\r\n'
         f"{caption}\r\n"
@@ -326,8 +327,8 @@ def send_photo(path, caption):
     )
     with urllib.request.urlopen(req) as resp:
         result = json.loads(resp.read())
-    print(f"Foto verzonden: {result['ok']}")
-    
+    print(f"Foto verzonden naar chat {chat}: {result['ok']}")
+    return True
 
 if __name__ == "__main__":
     now = datetime.now().hour
@@ -370,4 +371,6 @@ if __name__ == "__main__":
     # Foto versturen
     photos = glob.glob("*.jpg")
     if photos and chat_ids and random.random() < 0.5:
-        send_photo(random.choice(photos), "📸 TERUGBLIK om bij vooruit te kijken :)")
+        foto = random.choice(photos)
+        for cid in chat_ids:
+            send_photo(foto, "📸 TERUGBLIK om bij vooruit te kijken :)", target_chat=str(cid))
