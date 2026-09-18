@@ -25,7 +25,6 @@ jobs:
       - name: Luister naar commando's
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          FILES_FEED_URL: ${{ secrets.FILES_FEED_URL }}
         run: python listen.py
       - name: Telegram-melding bij falen
         if: failure()
