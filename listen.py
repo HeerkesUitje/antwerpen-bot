@@ -135,54 +135,68 @@ def get_antwerp_traffic():
         print(f"[DEBUG] Feed ophalen MISLUKT: {e}")
         return "fetch_fout"
 
+def _local(tag):
+    """Namespace strippen: '{http://...}entry' -> 'entry'"""
+    return tag.rsplit('}', 1)[-1]
+
+
 def get_news():
-    """VRT-nieuws: eerst Antwerpen, anders Vlaams."""
+    """VRT-nieuws: eerst Antwerpen, anders Vlaams. Werkt voor RSS én Atom."""
     try:
         print("[DEBUG] Nieuwsfeed ophalen...")
         with urllib.request.urlopen(bot.RSS_URL, timeout=10) as resp:
             xml_content = resp.read()
-        
+
         print(f"[DEBUG] XML ontvangen: {len(xml_content)} bytes")
-        print(f"[DEBUG] XML preview:\n{xml_content[:500].decode('utf-8', errors='ignore')}")
-        
+
         tree = ET.fromstring(xml_content)
-        items = tree.findall(".//item")
-        
-        print(f"[DEBUG] Totaal aantal <item>-elements: {len(items)}")
-        
+
+        # Verzamel items/entries: werkt voor RSS (<item>) én Atom (<entry>)
+        stories = []
+        for node in tree.iter():
+            if _local(node.tag) not in ("item", "entry"):
+                continue
+            title, link, desc = "", "", ""
+            for child in node:
+                ct = _local(child.tag)
+                if ct == "title":
+                    title = (child.text or "").strip()
+                elif ct == "link":
+                    # Atom: <link href="..."/>, RSS: <link>tekst</link>
+                    link = ((child.get("href") or child.text or "")).strip()
+                elif ct in ("description", "summary", "content"):
+                    desc = (child.text or "").strip()
+            if title:
+                stories.append((title, link, desc))
+
+        print(f"[DEBUG] Totaal aantal nieuws-items gevonden: {len(stories)}")
+
         antwerp = []
         general = []
-        for idx, i in enumerate(items):
-            title = (i.findtext("title") or "").strip()
-            link = (i.findtext("link") or "").strip()
-            if not title:
-                continue
-            desc = (i.findtext("description") or "")[:200]  # beperk lengte
-            entry = f"• {title}\n{link}"
-            
-            # Toon eerste 10 items in de log
+        for idx, (title, link, desc) in enumerate(stories):
+            entry = f"• {title}" + (f"\n{link}" if link else "")
             if idx < 10:
                 print(f"[DEBUG] Item {idx+1}: {title[:80]}")
-            
-            # Filter op Antwerpen (BEIDE spellingsvariaties, case insensitive)
-            combined = (title + desc).lower()
+
+            combined = (title + " " + desc).lower()
             if any(k in combined for k in ["antwerpen", "antwerp"]) and len(antwerp) < 5:
                 antwerp.append(entry)
-                print(f"[DEBUG] ✓ Antwerfs item gevonden: {title[:60]}")
+                print(f"[DEBUG] ✓ Antwerps item gevonden: {title[:60]}")
             if len(general) < 5:
                 general.append(entry)
-        
+
         print(f"[DEBUG] Antwerpse items: {len(antwerp)}, Algemene items: {len(general)}")
-        
+
         if antwerp:
             return "\U0001F4F0 NIEUWS — REGIO ANTWERPEN\n\n" + "\n\n".join(antwerp[:3])
         if general:
             return "\U0001F4F0 NIEUWS — VLAANDEREN\n\n" + "\n\n".join(general[:3])
         return "Nieuwsdienst lijkt plat. Rustig land, Vlaanderen."
-    
+
     except Exception as e:
         print(f"[DEBUG] Nieuws ophalen MISLUKT: {e}")
         return "Nieuwsdienst lijkt plat. Rustig land, Vlaanderen."
+        
 def answer(text):
     """Vertaalt commando naar antwoord."""
     cmd = text.strip().split()[0].split("@")[0].lower()
