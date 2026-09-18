@@ -13,15 +13,43 @@ OWNER_ID = 35520211   # Jouw Telegram-ID
 
 HELP_TEXT = (
     "Beschikbare commando's:\n"
-    "/countdown — Nachtjes tot Antwerpen\n"
-    "/feit — Leuk feitje over de stad\n"
-    "/weer — Actueel weer in 't Stad\n"
-    "/nieuws — Actuele VRT-koppen\n"
-    "/bug — Meld een probleem aan Stan\n"
-    "/cafe — Random café-tip\n"
-    "/eet — Random eettip\n"
-)
+    "/countdown - Dagen tot het weekend",
+    "/feit - Historisch/economisch weetje over Antwerpen",
+    "/weer - Actueel weer in Antwerpen",
+    "/nieuws - VRT-nieuws, eerst regio daarna Vlaanderen",
+    "/cafe - Café-tip",
+    "/eet - Vlaamse eet-tip",
+    "/foto - Willekeurige groepsfoto",
+    "/woorden - Antwerps dialectwoord",
+    "/bug - Fout melden bij de beheerder",
+    )
 
+WOORDEN = [
+    ("goesting", "zin in iets — 'goesting in een piosse'"),
+    ("amai", "uitroep van verbazing, de Vlaamse 'wow'"),
+    ("plezant", "gezellig, leuk — klinkt alsof het onschuldig is, is het ook"),
+    ("ambetant", "irritant — klinkt als 'ambtelijk' gedoe, klopt ook wel"),
+    ("ambras", "ruzietje, herrie"),
+    ("kes", "meisje — niks te maken met kazen of kazernes"),
+    ("schattekop", "schatje, lieve meid"),
+    ("piosse", "pintje bier — bestel zo en je hoort er echt bij"),
+    ("gemak", "WC — 'naar 't gemak gaan' heeft niks met comfort te maken"),
+    ("zeveren", "onzin kletsen — 'ge zevert' is geen compliment"),
+    ("totentrekkerie", "flauwekul, gedraai — indertijd dé reden voor ambras"),
+    ("sjareel", "opgefokt, driftig — 'zich sjarelen'"),
+    ("sloeber", "iemand die zijn drank naar binnen giet, Antwerps pur sang"),
+    ("muug", "moe — 'kzen muug' na de derde piosse"),
+    ("juste", "juist, precies — antwoord op vrijwel alles"),
+    ("frigo", "koelkast — een ijskast bestaat hier simpelweg niet"),
+    ("gazet", "krant — de krant van Antwerpen heet niet voor niks zo"),
+    ("lof", "tarwebrood — boterham met lof, geen salade"),
+    ("choco", "chocoladepasta — hagelslag zijn ze hier niet van"),
+    ("tas", "kop — 'een tas koffie' is geen liter"),
+]
+
+def get_woord():
+    woord, uitleg = random.choice(WOORDEN)
+    return f"\U0001F5E3️ WOORD VAN 'T OGENBLIK\n\n{woord}\n\u2192 {uitleg}"
 def tg(method, payload):
     req = urllib.request.Request(
         f"https://api.telegram.org/bot{BOT_TOKEN}/{method}",
@@ -30,25 +58,6 @@ def tg(method, payload):
     )
     with urllib.request.urlopen(req) as resp:
         return json.loads(resp.read())
-
-TYPE_NL = {
-    "newRoadworksLayout": "nieuwe wegenindeling (werkzone)",
-    "narrowLanes": "vernauwde rijstroken",
-    "laneClosure": "rijstrook afgesloten",
-    "roadworks": "wegenwerken",
-    "intermittentShortTermRoadworks": "kortdurende wegenwerken",
-    "roadMarkingWork": "wegmarkeringwerken",
-    "resurfacing": "herstel wegdek",
-    "singleAlternateLineTraffic": "om de beurt één rijstrook beschikbaar",
-    "obstruction": "obstakel op de weg",
-    "maintenanceWorks": "onderhoudswerken",
-    "speedReduction": "verlaagde maximumsnelheid",
-    "trafficCongestion": "verkeersopstopping",
-    "accident": "ongeval",
-    "emergencyVehicle": "hulpvoertuig aanwezig",
-    "roadClosed": "weg gesloten",
-    "allLanesClosed": "alle rijstroken afgesloten",
-}
 
 def _tag(elem):
     return elem.tag.split("}")[-1]
@@ -148,6 +157,9 @@ def answer(text):
 
     if cmd == "/eet":
         return f"🍽️ TIP:\n{random.choice(bot.FOOD_TIPS)}"
+
+    if cmd == "/woorden":
+        return get_woord()
 
     if cmd in ("/help", "/start"):
         return HELP_TEXT
