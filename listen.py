@@ -28,14 +28,14 @@ WOORDEN = [
     ("goesting", "zin in iets — 'goesting in een piosse'"),
     ("amai", "uitroep van verbazing, de Vlaamse 'wow'"),
     ("plezant", "gezellig, leuk — klinkt alsof het onschuldig is, is het ook"),
-    ("ambetant", "irritant — klinkt als 'ambtelijk' gedoe, klopt ook wel"),
+    ("ambetant", "irritant — klinkt als 'ambtelijk' gedoe, klopt ook wel, JP :)"),
     ("ambras", "ruzietje, herrie"),
     ("kes", "meisje — niks te maken met kazen of kazernes"),
     ("schattekop", "schatje, lieve meid"),
     ("piosse", "pintje bier — bestel zo en je hoort er echt bij"),
     ("gemak", "WC — 'naar 't gemak gaan' heeft niks met comfort te maken"),
     ("zeveren", "onzin kletsen — 'ge zevert' is geen compliment"),
-    ("totentrekkerie", "flauwekul, gedraai — indertijd dé reden voor ambras"),
+    ("totentrekkerie", "flauwekul, gedraai — indertijd dé reden voor ambras (Stan's favoriete nieuw geleerde woord!)"),
     ("sjareel", "opgefokt, driftig — 'zich sjarelen'"),
     ("sloeber", "iemand die zijn drank naar binnen giet, Antwerps pur sang"),
     ("muug", "moe — 'kzen muug' na de derde piosse"),
@@ -44,7 +44,9 @@ WOORDEN = [
     ("gazet", "krant — de krant van Antwerpen heet niet voor niks zo"),
     ("lof", "tarwebrood — boterham met lof, geen salade"),
     ("choco", "chocoladepasta — hagelslag zijn ze hier niet van"),
-    ("tas", "kop — 'een tas koffie' is geen liter"),
+    ("tas", "kop — 'een tas koffie' zal niet lekken"),
+    ("Aentwaerpen is de stad en de rest is de parking"),
+    ("ge ligd in de boveste schuif = ik zie je graag, jij bent m'n favoriet (je ligt in de hoogste lade)"),
 ]
 
 def get_woord():
