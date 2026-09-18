@@ -31,6 +31,7 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          MULTI_CHAT_IDS: ${{ secrets.MULTI_CHAT_IDS }}
         run: python antwerpen_bot.py avond
         
       - name: Telegram-melding bij falen
