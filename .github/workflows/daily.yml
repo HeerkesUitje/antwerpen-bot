@@ -2,9 +2,18 @@ name: Daily Antwerpen Update
 
 on:
   schedule:
-    - cron: "0 6 * * *"    # 08:00 CET / 09:00 CEST (ochtend)
-    - cron: "0 16 * * *"   # 18:00 CET / 19:00 CEST (avond)
-  workflow_dispatch: {}
+    - cron: "0 7 * * *"    # 08:00 CET (na 26 okt) — nu tot 26 okt: 09:00
+    - cron: "0 17 * * *"   # 18:00 CET (na 26 okt) — nu tot 26 okt: 19:00
+  workflow_dispatch:
+    inputs:
+      editie:
+        description: "Welke editie versturen?"
+        required: false
+        default: ochtend
+        type: choice
+        options:
+          - ochtend
+          - avond
 
 jobs:
   send-update:
@@ -19,7 +28,7 @@ jobs:
           python-version: "3.12"
 
       - name: Verstuur update naar Telegram (ochtend)
-        if: ${{ github.event.schedule == '0 6 * * *' }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.editie == 'ochtend') || (github.event_name == 'schedule' && github.event.schedule == '0 7 * * *') }}
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
@@ -27,13 +36,13 @@ jobs:
         run: python antwerpen_bot.py ochtend
 
       - name: Verstuur update naar Telegram (avond)
-        if: ${{ github.event.schedule != '0 6 * * *' }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.editie == 'avond') || (github.event_name == 'schedule' && github.event.schedule == '0 17 * * *') }}
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
           MULTI_CHAT_IDS: ${{ secrets.MULTI_CHAT_IDS }}
         run: python antwerpen_bot.py avond
-        
+
       - name: Telegram-melding bij falen
         if: failure()
         env:
