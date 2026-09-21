@@ -7,6 +7,7 @@ import sys
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import date, datetime
+from pathlib import Path
 
 # ====== INSTELLINGEN ======
 TRIP_DATE = date(2026, 11, 27)
@@ -177,57 +178,41 @@ def get_weather():
 
 
 def get_antwerp_news():
-    """Haalt VRT-nieuws op: voorkeur voor Antwerpen, anders Vlaams terugval-artikel."""
+    """Haalt VRT-nieuws op: Antwerps eerst, aanvullen met Vlaams nieuws tot 3 titels."""
     try:
         print("[DEBUG] Nieuwsfeed ophalen...")
         with urllib.request.urlopen(RSS_URL, timeout=10) as resp:
             xml_content = resp.read()
-        
+
         print(f"[DEBUG] XML ontvangen: {len(xml_content)} bytes")
-        
-        # Dump eerste 500 karakters van de XML (om structuur te zien)
-        print(f"[DEBUG] XML preview:\n{xml_content[:500].decode('utf-8', errors='ignore')}")
-        
-        # Eenvoudige tekst-zoekopdracht (geen XML-parsing, want namespaces kunnen mislukken)
-        xml_str = xml_content.decode("utf-8", errors="ignore").lower()
-        
-        # Zoek naar alle <title>-blokken met regex
+
+        # Regex die ook <title type="text"> matcht; behoud originele casing
         import re
+        import html as html_lib
         titles = []
-        for match in re.finditer(r"<title>([^<]+)</title>", xml_str):
-            title = match.group(1).strip()
-            # Filter technische titles
-            if len(title) > 10 and "vrt" not in title.lower() and "rss" not in title.lower():
+        for match in re.finditer(r"<title[^>]*>([^<]+)</title>", xml_content.decode("utf-8", errors="ignore")):
+            title = html_lib.unescape(match.group(1)).strip()
+            # Filter technische feed-titels (zoals de naam van de feed zelf)
+            if len(title) > 10 and "vrt nws:" not in title.lower():
                 titles.append(title)
-        
+
         print(f"[DEBUG] Totaal aantal titels gevonden: {len(titles)}")
-        print(f"[DEBUG] Eerste 5 titels:")
         for t in titles[:5]:
             print(f"[DEBUG]   • {t}")
-        
-        # Filter op Antwerpen (NL én EN, case insensitive)
-        antwerp_titles = [
-            t for t in titles 
-            if any(k in t.lower() for k in ["antwerpen", "antwerp"])
-        ]
-        
-        print(f"[DEBUG] Antwerpse titels gevonden: {len(antwerp_titles)}")
-        for t in antwerp_titles[:3]:
-            print(f"[DEBUG]   • {t}")
-        
-        if antwerp_titles:
-            choice = random.choice(antwerp_titles)
-            return f"• {choice}"
-        
-        # Geen Antwerps nieuws vandaag: val terug op eerste geldig artikel
-        if titles:
-            print(f"[DEBUG] Geen Antwerps nieuws, val terug op: {titles[0]}")
-            return f"• {titles[0]}"
-        
+
+        # Eerst Antwerps, aanvullen met algemeen Vlaams nieuws tot 3
+        antwerp_titles = [t for t in titles if "antwerp" in t.lower()]
+        overige = [t for t in titles if t not in antwerp_titles]
+        nieuws_titels = (antwerp_titles + overige)[:3]
+
+        print(f"[DEBUG] Antwerpse titels: {len(antwerp_titles)}, "
+              f"eindselectie: {len(nieuws_titels)}")
+        return nieuws_titels
+
     except Exception as e:
         print(f"[DEBUG] Nieuws ophalen MISLUKT: {e}")
-    
-    return None
+
+    return []
 
 def send_message(text, target_chat=None):
     chat = target_chat or CHAT_ID
@@ -282,7 +267,9 @@ def build_morning(weather, news, theme, countdown):
     ]
 
     if news:
-        parts += ["", f"\U0001F4F0 ANTWERPS NIEUWS", f"{news[0]}"]
+        parts += ["", "\U0001F4F0 NIEUWS"]
+        for t in news:
+            parts.append(f"• {t}")
 
     parts += ["", f"\U0001F44B {random.choice(QUOTES_MORNING)}"]
     return "\n".join(parts)
@@ -391,10 +378,18 @@ if __name__ == "__main__":
     else:
         for cid in chat_ids:
             send_message(message, target_chat=str(cid))
+            
+    # Foto's versturen — alleen in de avondeditie
+    PHOTO_DIR = Path(__file__).parent / "photos"
+    photos = list(PHOTO_DIR.glob("*.jpg"))
+    print(f"[DEBUG] Foto's gevonden: {len(photos)} in {PHOTO_DIR}")
+    for p in photos:
+        print(f"[DEBUG]   - {p.name}")
 
-    # Foto versturen
-    photos = glob.glob("*.jpg")
-    if photos and chat_ids and random.random() < 0.5:
-        foto = random.choice(photos)
-        for cid in chat_ids:
-            send_photo(foto, "📸 TERUGBLIK om bij vooruit te kijken :)", target_chat=str(cid))
+    if is_evening:
+        if photos and chat_ids:
+            foto = random.choice(photos)
+            for cid in chat_ids:
+                send_photo(str(foto), "📸 TERUGBLIK om bij vooruit te kijken :)", target_chat=str(cid))
+        else:
+            print("[DEBUG] GEEN foto verstuurd — check de foto-map!")
