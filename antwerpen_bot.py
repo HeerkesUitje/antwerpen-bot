@@ -15,7 +15,7 @@ LAT, LON = 51.2194, 4.4025
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 CHAT_ID = os.environ.get("CHAT_ID", None)
 RSS_URL = "https://www.vrt.be/vrtnws/nl.rss.articles.xml"
-PHOTO_DIR = Path(__file__).parent / "photos"
+PHOTO_DIR = Path(__file__).parent  # repo-root: hier liggen de foto's
 
 # Debug: check of CHAT_ID en BOT_TOKEN beschikbaar zijn
 print(f"[DEBUG] CHAT_ID aanwezig: {'ja' if CHAT_ID else 'NEE'}")
