@@ -136,7 +136,7 @@ def answer(text):
     if cmd == "/countdown":
         rest = (bot.TRIP_DATE - date.today()).days
         if rest > 1:
-            return f"Nog {rest} nachtjes, meneer."
+            return f"Nog {rest} nachtjes, oh Heer."
         if rest == 1:
             return "MORGEN GAAT HET GEBEURDEN. 🚀"
         if rest == 0:
