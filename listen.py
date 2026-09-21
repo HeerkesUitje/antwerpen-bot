@@ -19,7 +19,6 @@ HELP_TEXT = (
     "/nieuws - VRT-nieuws, eerst regio daarna Vlaanderen",
     "/cafe - Café-tip",
     "/eet - Vlaamse eet-tip",
-    "/foto - Willekeurige groepsfoto",
     "/woorden - Antwerps dialectwoord",
     "/bug - Fout melden bij de beheerder",
     )
@@ -101,6 +100,10 @@ def get_news():
 
         antwerp = []
         general = []
+        # Vlaamse relevantie: steden + Vlaamse/Belgische woorden
+        vlaams = ["antwerpen", "antwerp", "gent", "brugge", "leuven", "mechelen",
+                  "hasselt", "kempen", "kempenland", "limburg", "vlaanderen",
+                  "vlaams", "vlaamse", "belgië", "belgische", "belg", "brussel"]
         for idx, (title, link, desc) in enumerate(stories):
             entry = f"• {title}" + (f"\n{link}" if link else "")
             if idx < 10:
@@ -110,7 +113,8 @@ def get_news():
             if any(k in combined for k in ["antwerpen", "antwerp"]) and len(antwerp) < 5:
                 antwerp.append(entry)
                 print(f"[DEBUG] ✓ Antwerps item gevonden: {title[:60]}")
-            if len(general) < 5:
+            # Terugval: alleen Vlaams/Belgisch relevant
+            if any(k in combined for k in vlaams) and len(general) < 5:
                 general.append(entry)
 
         print(f"[DEBUG] Antwerpse items: {len(antwerp)}, Algemene items: {len(general)}")
