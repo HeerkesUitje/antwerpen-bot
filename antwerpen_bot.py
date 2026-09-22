@@ -147,7 +147,7 @@ QUOTES_MORNING = [
 QUOTES_EVENING = [
     "In Antwerpen borrelen we lokaal. Geen BOB nodig.",
     "Nog even volhouden, Antwerpen komt in zicht!",
-    "Droom maar lekker van handjes en frietjes.",
+    "Allemaal Antwerpenaar!! Let's go!",
     "Heeft iemand al gecheckt of June Peers in de stad is?",
     "Be less like Tom Waes: biertje bij aankomst, niet onderweg!",
     "Helaas bestaat de Zillion niet meer, maar we kunnen vast ergens anders feesten!",
