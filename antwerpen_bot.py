@@ -21,7 +21,7 @@ PHOTO_DIR = Path(__file__).parent  # repo-root: hier liggen de foto's
 print(f"[DEBUG] CHAT_ID aanwezig: {'ja' if CHAT_ID else 'NEE'}")
 print(f"[DEBUG] BOT_TOKEN aanwezig: {'ja' if BOT_TOKEN else 'NEE'}")
 
-    HISTORY_FLASHBACKS = [
+HISTORY_FLASHBACKS = [
   # --- Gouden eeuw & val (16e eeuw) ---
     "FLASHBACK [ca. 1540-1580]: In de 16e eeuw was Antwerpen de rijkste stad ten noorden van de Alpen.",
     "FLASHBACK [1560]: Rond 1560 telde de stad circa 100.000 inwoners - een wereldstad naar toenmalige maatstaven.",
