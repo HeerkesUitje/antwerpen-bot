@@ -146,6 +146,9 @@ def answer(text):
     if cmd == "/feit":
         return random.choice(bot.FACTS)
 
+    if cmd == "/geschiedenis":
+        return random.choice(bot.HISTORY_FLASHBACKS)
+        
     if cmd == "/weer":
         w = bot.get_weather()
         c = w["current"]
