@@ -2,7 +2,7 @@ name: Antwerpen Bot Luisteraar
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # elke 5 minuten
+    - cron: "0 * * * *"   # elk uur op het hele uur
   workflow_dispatch: {}
 
 concurrency:
