@@ -2,8 +2,8 @@ name: Daily Antwerpen Update
 
 on:
   schedule:
-    - cron: "0 7 * * *"    # 08:00 CET (na 26 okt) — nu tot 26 okt: 09:00
-    - cron: "0 17 * * *"   # 18:00 CET (na 26 okt) — nu tot 26 okt: 19:00
+    - cron: "2 7 * * *"    # 08:00 CET (na 26 okt) — nu tot 26 okt: 09:00
+    - cron: "2 17 * * *"   # 18:00 CET (na 26 okt) — nu tot 26 okt: 19:00
   workflow_dispatch:
     inputs:
       editie:
