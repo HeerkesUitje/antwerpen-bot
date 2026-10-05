@@ -144,6 +144,16 @@ PUB_TIPS = [
     "De Vagant: klein, bruin café — binnengaan zonder afspraak is sport.",
     "Café De Leeuw: Antwerps, lokaal, geen poespas.",
     "Bar Léon op de Leopoldplaats: chic broodje/lunch-plek.",
+    "Den Engel: authentiek Antwerps café op de Grote Markt, Koninck uit een convexglas met terraszicht op het plein.",
+    "Café Pelikaan: 4.6/5 op TripAdvisor, bruine sfeer met lokale clientèle.",
+    "Café Cabron: 'cool pub' vlakbij de Onze-Lieve-Vrouwekathedraal, authentieke sfeer.",
+    "Café Pardaf: beer bar dichtbij de Grote Markt en de Schelde, altijd een bezoek waard volgens reizigers.",
+    "Café Canapé: 5.0/5 rating, gezellig café met biljart in de ruimte.",
+    "Jones & Co: cosy bar in het hart van Antwerpen, beschreven als 'best drink experience'.",
+    "An Sibhin: drukke Irish Pub met goed beoordelingen.",
+    "Cafe Quinten Matsijs: 4.3/5, klassieke keuze in de buurt.",
+    "The Northerner: 4.8/5 rating, moderne optie voor bierliefhebbers.",
+    "'t Kafee: traditioneel café met ruim 100+ reviews op TripAdvisor.",
 ]
 
 FOOD_TIPS = [
