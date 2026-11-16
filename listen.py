@@ -13,15 +13,15 @@ OWNER_ID = 35520211   # Jouw Telegram-ID
 
 HELP_TEXT = (
     "Beschikbare commando's:\n"
-    "/countdown - Dagen tot het weekend",
-    "/feit - Historisch/economisch weetje over Antwerpen",
-    "/weer - Actueel weer in Antwerpen",
-    "/nieuws - VRT-nieuws, eerst regio daarna Vlaanderen",
-    "/cafe - Café-tip",
-    "/eet - Vlaamse eet-tip",
-    "/woorden - Antwerps dialectwoord",
-    "/bug - Fout melden bij de beheerder",
-    )
+    "/countdown - Dagen tot het weekend\n"
+    "/feit - Historisch/economisch weetje over Antwerpen\n"
+    "/weer - Actueel weer in Antwerpen\n"
+    "/nieuws - VRT-nieuws, eerst regio daarna Vlaanderen\n"
+    "/cafe - Café-tip\n"
+    "/eet - Vlaamse eet-tip\n"
+    "/woorden - Antwerps dialectwoord\n"
+    "/bug - Fout melden bij de beheerder"
+)
 
 WOORDEN = [
     ("goesting", "zin in iets — 'goesting in een piosse'"),
@@ -44,10 +44,9 @@ WOORDEN = [
     ("lof", "tarwebrood — boterham met lof, geen salade"),
     ("choco", "chocoladepasta — hagelslag zijn ze hier niet van"),
     ("tas", "kop — 'een tas koffie' zal niet lekken"),
-    ("Aentwaerpen is de stad en de rest is de parking"),
-    ("ge ligd in de boveste schuif = ik zie je graag, jij bent m'n favoriet (je ligt in de hoogste lade)"),
+    ("Aentwaerpen", "de stad zelf. De rest is de parking."),
+    ("ge ligd in de boveste schuif", "ik zie je graag, jij bent m'n favoriet (je ligt in de hoogste lade)"),
 ]
-
 def get_woord():
     woord, uitleg = random.choice(WOORDEN)
     return f"\U0001F5E3️ WOORD VAN 'T OGENBLIK\n\n{woord}\n\u2192 {uitleg}"
@@ -151,10 +150,12 @@ def answer(text):
         
     if cmd == "/weer":
         w = bot.get_weather()
+        if not w:
+            return "☁️ Weerdienst antwoordt niet. In Antwerpen: bewolkt met kans op bewolking."
         c = w["current"]
         d = w["daily"]
         return f"☁️ Nu {c['temperature_2m']:.0f}°C (gevoel {c['apparent_temperature']:.0f}°C), max {d['temperature_2m_max'][0]:.0f}°C, regenkans {d['precipitation_probability_max'][0]}%"
-
+        
     if cmd == "/nieuws":
         return get_news()
 
