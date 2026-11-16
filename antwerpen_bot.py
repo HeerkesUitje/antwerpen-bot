@@ -19,10 +19,10 @@ PHOTO_DIR = Path(__file__).parent  # repo-root: hier liggen de foto's
 
 # Debug: check of CHAT_ID en BOT_TOKEN beschikbaar zijn
 print(f"[DEBUG] CHAT_ID aanwezig: {'ja' if CHAT_ID else 'NEE'}")
-print(f"[DEBUG] BOT_TOKEN aanwezig: {'ja' if BOT_TOKEN else 'NEE'}")
+print(f"[DEBUG] BOT_TOKEN aanwezig: ja")
 
 HISTORY_FLASHBACKS = [
-  # --- Gouden eeuw & val (16e eeuw) ---
+    # --- Gouden eeuw & val (16e eeuw) ---
     "FLASHBACK [ca. 1540-1580]: In de 16e eeuw was Antwerpen de rijkste stad ten noorden van de Alpen.",
     "FLASHBACK [1560]: Rond 1560 telde de stad circa 100.000 inwoners - een wereldstad naar toenmalige maatstaven.",
     "FLASHBACK [16e eeuw]: Tijdgenoten noemden Antwerpen 'het Florence van het Noorden'.",
@@ -110,7 +110,7 @@ FACTS = [
     "De Red Star Line-gebouwen herbergen sinds 2013 het emigratiemuseum van de stad.",
     "Het Steen is het oudste gebouw van de stad, daterend uit het begin van de 13e eeuw.",
     "Het Havenhuis van Zaha Hadid lijkt een vliegende schotel bovenop een monumentaal gebouw uit 1922.",
-    "De Sint-Pauluskerk heeft de rijkste barokke collectie van de stad, waaronder veel Rubens-copij.",
+    "De Sint-Pauluskerk heeft de rijkste barokke collectie van de stad, waaronder veel Rubens-copy's.",
     "In de Sint-Jacobskerk ligt Rubens zelf begraven, vlak bij het altaar van zijn eigen kapel.",
 
     # --- Kunst, wetenschap & cultuur ---
@@ -150,7 +150,7 @@ PUB_TIPS = [
     "Café Pardaf: beer bar dichtbij de Grote Markt en de Schelde, altijd een bezoek waard volgens reizigers.",
     "Café Canapé: 5.0/5 rating, gezellig café met biljart in de ruimte.",
     "Jones & Co: cosy bar in het hart van Antwerpen, beschreven als 'best drink experience'.",
-    "An Sibhin: drukke Irish Pub met goed beoordelingen.",
+    "An Sibhin: drukke Irish Pub met goede beoordelingen.",
     "Cafe Quinten Matsijs: 4.3/5, klassieke keuze in de buurt.",
     "The Northerner: 4.8/5 rating, moderne optie voor bierliefhebbers.",
     "'t Kafee: traditioneel café met ruim 100+ reviews op TripAdvisor.",
@@ -163,7 +163,7 @@ FOOD_TIPS = [
     "Exki is toeristenvoer. Ga voor een echt frituur.",
     "Balls & Glory op de Kloosterstraat: gehaktballen als kunstvorm.",
     "Het Antwerpse handje verwijst naar de hand van Silvius Brabo. Eén mythe, oneindig bakvormen.",
-    "Het bolleke-glas van De Koninck (1833) kent geen. Herkenbaar op elk terras in de stad.",
+    "Het bolleke-glas van De Koninck (1833) kent geen gelijke. Herkenbaar op elk terras in de stad.",
     "Elixir d'Anvers (1863): ooit medicijn, nu likeur. Werking nooit bewezen, verkoop nooit stilgevallen.",
     "Mosselen komen uit Zeeland, friet uit de Westhoek. België claimt de combinatie — en terecht.",
     "Brabo hakte de hand van een tolgaarder af. Antwerpen tegen riviertollen: een familietraditie.",
@@ -191,13 +191,23 @@ QUOTES_EVENING = [
     "Helaas bestaat de Zillion niet meer, maar we kunnen vast ergens anders feesten!",
 ]
 
+
 def get_weather():
+    """Haalt actueel weer op. Geeft een dict terug, of None bij falen."""
+    url = (
+        "https://api.open-meteo.com/v1/forecast"
+        f"?latitude={LAT}&longitude={LON}"
+        "&current=temperature_2m,apparent_temperature"
+        "&daily=temperature_2m_max,precipitation_probability_max"
+        "&timezone=Europe%2FBrussels"
+    )
     try:
-        url = "https://jouw-weerapi-url"
         with urllib.request.urlopen(url, timeout=10) as resp:
             data = json.loads(resp.read().decode())
-        # ... bestaande vertaallogica naar tekst ...
-        return weer_tekst
+        if "current" in data and "daily" in data:
+            return data
+        print(f"[WARN] Onverwacht weerformaat: {list(data.keys())}")
+        return None
     except Exception as e:
         print(f"[WARN] Weer ophalen mislukt: {e}")
         return None
@@ -241,13 +251,11 @@ def countdown_text(countdown):
         return f"Nog {countdown} nachtjes slapen! 🎉"
     elif countdown == 1:
         return "MORGEN GAAT HET GEBEURDEN! 🚀"
-    return "HET IS ZORVER! 🎉🎉🎉"
+    return "HET IS ZOVER! 🎉🎉🎉"
 
 
 def build_message(weather, news, countdown, is_evening):
     """Bouwt het bericht: beide edities hebben dezelfde onderdelen."""
-    current = weather["current"]
-    daily = weather["daily"]
     tip = random.choice(PUB_TIPS + FOOD_TIPS)
 
     if is_evening:
@@ -263,13 +271,21 @@ def build_message(weather, news, countdown, is_evening):
         "",
         countdown_text(countdown),
         "",
-        f"\U000026C5 HET WEER",
-        f"Nu {current['temperature_2m']:.0f}\u00B0C "
-        f"(gevoel {current['apparent_temperature']:.0f}\u00B0C), "
-        f"max {daily['temperature_2m_max'][0]:.0f}\u00B0C, "
-        f"regenkans {daily['precipitation_probability_max'][0]}%",
-        "",
     ]
+
+    parts += ["\U000026C5 HET WEER"]
+    if weather:
+        current = weather["current"]
+        daily = weather["daily"]
+        parts += [
+            f"Nu {current['temperature_2m']:.0f}\u00B0C "
+            f"(gevoel {current['apparent_temperature']:.0f}\u00B0C), "
+            f"max {daily['temperature_2m_max'][0]:.0f}\u00B0C, "
+            f"regenkans {daily['precipitation_probability_max'][0]}%",
+        ]
+    else:
+        parts += ["🌦️ Weerdienst doet even niet mee. Het weer in Antwerpen doet wat het wil."]
+    parts.append("")
 
     if news:
         parts += ["\U0001F4F0 NIEUWS"]
@@ -354,14 +370,11 @@ if __name__ == "__main__":
         is_evening = datetime.now().hour >= 18
 
     countdown = (TRIP_DATE - date.today()).days
-weather = get_weather()
-if weather:
-    bericht += f"\n{weather}"
-else:
-    bericht += "\n🌦️ Weerbericht is er even niet, het weer in Antwerpen doet wat het wil."
-  news = get_antwerp_news()
-    message = build_message(weather, news, countdown, is_evening)
 
+    weather = get_weather()
+    news = get_antwerp_news()
+
+    message = build_message(weather, news, countdown, is_evening)
     print(message)
 
     # Chat-lijst opbouwen: MULTI_CHAT_IDS + CHAT_ID als vangnet
@@ -385,8 +398,6 @@ else:
     # Foto versturen — in beide edities
     photos = list(PHOTO_DIR.glob("*.jpg"))
     print(f"[DEBUG] Foto's gevonden: {len(photos)} in {PHOTO_DIR}")
-    for p in photos:
-        print(f"[DEBUG]   - {p.name}")
 
     if photos and chat_ids:
         foto = random.choice(photos)
