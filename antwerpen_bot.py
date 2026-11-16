@@ -192,15 +192,15 @@ QUOTES_EVENING = [
 ]
 
 def get_weather():
-    url = (
-        f"https://api.open-meteo.com/v1/forecast"
-        f"?latitude={LAT}&longitude={LON}"
-        f"&current=temperature_2m,apparent_temperature,precipitation"
-        f"&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max"
-        f"&timezone=Europe%2FBrussels"
-    )
-    with urllib.request.urlopen(url) as resp:
-        return json.loads(resp.read())
+    try:
+        url = "https://jouw-weerapi-url"
+        with urllib.request.urlopen(url, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+        # ... bestaande vertaallogica naar tekst ...
+        return weer_tekst
+    except Exception as e:
+        print(f"[WARN] Weer ophalen mislukt: {e}")
+        return None
 
 
 def get_antwerp_news():
@@ -354,8 +354,12 @@ if __name__ == "__main__":
         is_evening = datetime.now().hour >= 18
 
     countdown = (TRIP_DATE - date.today()).days
-    weather = get_weather()
-    news = get_antwerp_news()
+weather = get_weather()
+if weather:
+    bericht += f"\n{weather}"
+else:
+    bericht += "\n🌦️ Weerbericht is er even niet, het weer in Antwerpen doet wat het wil."
+  news = get_antwerp_news()
     message = build_message(weather, news, countdown, is_evening)
 
     print(message)
