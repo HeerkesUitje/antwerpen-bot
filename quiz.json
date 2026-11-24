@@ -1,0 +1,179 @@
+{
+  "instellingen": {
+    "punten_eerste_goed": 2,
+    "punten_goed": 1,
+    "antwoordtijd_uren": 12,
+    "groep_chat_id": "VUL_CHAT_ID_IN_OF_LEES_UIT_SECRET"
+  },
+  "vragen": [
+    {
+      "id": 1,
+      "dag": 1,
+      "editie": "ochtend",
+      "categorie": "Vlaams",
+      "vraag": "Wat betekent het Vlaamse woord 'ambetant'?",
+      "opties": ["Lastig of vervelend", "Ambachtelijk gebakken", "Druk bezet", "Verliefd"],
+      "juist": 0,
+      "uitleg": "Ambetant = lastig, vervelend, ellendig. perfect woord voor een file op de Ring.",
+      "foto": null
+    },
+    {
+      "id": 2,
+      "dag": 1,
+      "editie": "avond",
+      "categorie": "Antwerpen",
+      "vraag": "Welke legende hoort bij het Brabofontein op de Grote Markt?",
+      "opties": [
+        "Brabo gooide de hand van de reus Antigoon in de Schelde",
+        "Brabo verstopte zijn goudschat onder de kathedraal",
+        "Brabo won een zeilrace tegen de Duivel",
+        "Brabo stichtte Antwerpen op een olifant"
+      ],
+      "juist": 0,
+      "uitleg": "Reus Antigoon eiste tol en hakte handen af van wie niet betaalde; Brabo versloeg hem en wierp de hand ('hand-werpen') in de Schelde. Vandaar: Antwerpen.",
+      "foto": null
+    },
+    {
+      "id": 3,
+      "dag": 2,
+      "editie": "ochtend",
+      "categorie": "Vlaams",
+      "vraag": "Als een Vlaming 'een frisje' wil, wat bestelt hij dan?",
+      "opties": ["Een glas wijn", "Een frisdrank", "Een koud biertje", "Een waterijsje"],
+      "juist": 1,
+      "uitleg": "'Fut' of 'fris' = frisdrank in Vlaanderen.",
+      "foto": null
+    },
+    {
+      "id": 4,
+      "dag": 2,
+      "editie": "avond",
+      "categorie": "Antwerpen",
+      "vraag": "Welke beroemde schilder woonde en werkte in het Rubenshuis in Antwerpen?",
+      "opties": ["Rembrandt van Rijn", "Jan van Eyck", "Peter Paul Rubens", "Vincent van Gogh"],
+      "juist": 2,
+      "uitleg": "Vrij pittige vraag, dat knowen jullie, maar iedereen moet punten kunnen pakken in week 1.",
+      "foto": null
+    },
+    {
+      "id": 5,
+      "dag": 3,
+      "editie": "ochtend",
+      "categorie": "Antwerpen",
+      "vraag": "Wat is de Onze-Lieve-Vrouwekathedraal in Antwerpen?",
+      "opties": [
+        "De grootste kerk van de Benelux",
+        "De oudste houten kerk van Europa",
+        "De hoogste toren van Nederland",
+        "Een voormalige graanschuur"
+      ],
+      "juist": 0,
+      "uitleg": "Grootste kerkgebouw van de Benelux, met een toren van 123 meter.",
+      "foto": null
+    },
+    {
+      "id": 6,
+      "dag": 3,
+      "editie": "avond",
+      "categorie": "Vlaams",
+      "vraag": "Wat is een 'kotmadam' in Vlaamse studententaal?",
+      "opties": [
+        "Een strenge conrectrix",
+        "Een hospita die studentenkamers verhuurt",
+        "Een marktvrouw op de Vrijdagmarkt",
+        "De moeder van je kotgenoot"
+      ],
+      "juist": 1,
+      "uitleg": "'Kot' = studentenkamer, de kotmadam is de hospita. Klassiek Vlaams studentenleven.",
+      "foto": null
+    },
+    {
+      "id": 7,
+      "dag": 4,
+      "editie": "ochtend",
+      "categorie": "Algemeen",
+      "vraag": "Welk land heeft de langste kustlijn ter wereld?",
+      "opties": ["Rusland", "Australië", "Canada", "Indonesië"],
+      "juist": 2,
+      "uitleg": "Canada: ruim 200.000 km kustlijn dankzij tienduizenden eilanden.",
+      "foto": null
+    },
+    {
+      "id": 8,
+      "dag": 4,
+      "editie": "avond",
+      "categorie": "Algemeen",
+      "vraag": "Welke planeet is de grootste in ons zonnestelsel?",
+      "opties": ["Saturnus", "Jupiter", "Neptunus", "Aarde"],
+      "juist": 1,
+      "uitleg": "Jupiter: ruim 1.300 aardbollen passen erin.",
+      "foto": null
+    },
+    {
+      "id": 9,
+      "dag": 5,
+      "editie": "ochtend",
+      "categorie": "Algemeen",
+      "vraag": "Van welk land is Antwerpen in 1839 officieel deel geworden?",
+      "opties": ["Frankrijk", "Nederland", "België", "Duitsland"],
+      "juist": 2,
+      "uitleg": "Na de scheiding van Nederland kwam Antwerpen definitief bij het jonge België (onafhankelijk 1830, verdrag 1839).",
+      "foto": null
+    },
+    {
+      "id": 10,
+      "dag": 5,
+      "editie": "avond",
+      "categorie": "Algemeen",
+      "vraag": "Welke sport speel je op een baan van 18 'holes'?",
+      "opties": ["Hockey", "Golf", "Cricket", "Croquet"],
+      "juist": 1,
+      "uitleg": "Golf. Als iemand dit fout heeft, verdient hij de afwas-leadership-runtime.",
+      "foto": null
+    },
+    {
+      "id": 11,
+      "dag": 6,
+      "editie": "ochtend",
+      "categorie": "Foto",
+      "vraag": "FOTOVRAAG: op welke plek is deze foto genomen?",
+      "opties": ["Te vervangen door optie 1", "Te vervangen door optie 2", "Te vervangen door optie 3", "Te vervangen door optie 4"],
+      "juist": 0,
+      "uitleg": "Jouw uitleg hier.",
+      "foto": "VUL_PAD_IN_BIJVOORBEELD_photos/dispuut_01.jpg"
+    },
+    {
+      "id": 12,
+      "dag": 6,
+      "editie": "avond",
+      "categorie": "Foto",
+      "vraag": "FOTOVRAAG: wie hangt hier het affaire-beleid uit? (prijsvraag)",
+      "opties": ["Te vervangen", "Te vervangen", "Te vervangen", "Te vervangen"],
+      "juist": 0,
+      "uitleg": "Jouw uitleg hier.",
+      "foto": "VUL_PAD_IN_BIJVOORBEELD_photos/dispuut_02.jpg"
+    },
+    {
+      "id": 13,
+      "dag": 7,
+      "editie": "ochtend",
+      "categorie": "Foto",
+      "vraag": "FOTOVRAAG: welk jaar is deze foto?",
+      "opties": ["Te vervangen", "Te vervangen", "Te vervangen", "Te vervangen"],
+      "juist": 0,
+      "uitleg": "Jouw uitleg hier.",
+      "foto": "VUL_PAD_IN_BIJVOORBEELD_photos/dispuut_03.jpg"
+    },
+    {
+      "id": 14,
+      "dag": 7,
+      "editie": "avond",
+      "categorie": "Algemeen",
+      "vraag": "FINALE: hoeveel torens telt de Antwerpse kathedraal (voltooid in bouwfase)?",
+      "opties": ["1", "2", "3", "7"],
+      "juist": 0,
+      "uitleg": "Origineel waren er 10 gepland, maar er is er maar 1 voltooid. Prestige-project dat time-overran: kennen we, Stan.",
+      "foto": null
+    }
+  ]
+}
