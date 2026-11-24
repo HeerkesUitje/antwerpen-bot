@@ -138,7 +138,7 @@
       "categorie": "Foto",
       "vraag": "FOTOVRAAG: op welke plek is deze foto genomen?",
       "opties": ["Baarle-Nassau", "Tilburg", "Breda", "Odiliapeel"],
-      "juist": 3,
+      "juist": 2,
       "uitleg": "Barbecue les in 2016!",
       "foto": "2016-10-22 17.19.58-X2.jpg"
     },
@@ -149,7 +149,7 @@
       "categorie": "Foto",
       "vraag": "FOTOVRAAG: Waar hadden Stan en Erik hun inauguratie?",
       "opties": ["Ardennen", "Maastricht", "Kampen", "Cuijk"],
-      "juist": 3,
+      "juist": 2,
       "uitleg": "In het huis van Anton's ouders. Stan had er echt zin in zie je hier :)",
       "foto": "DSC00021.jpg"
     },
@@ -160,7 +160,7 @@
       "categorie": "Foto",
       "vraag": "FOTOVRAAG: Wat is het grootste verschil (naast leeftijd) bij JP, Stan en Joost in 2004?",
       "opties": ["baardgroei", "aantal gewonnen potjes poker", "totaal aantal kilo", "kledingstijl"],
-      "juist": 1,
+      "juist": 0,
       "uitleg": "Check die gladde koppies. Pokerwinst gaat nog altijd naar Joost en kledingstijl is voorgeschreven...",
       "foto": "Heerenweekend_16_18_april_2004_23.jpg"
     },
