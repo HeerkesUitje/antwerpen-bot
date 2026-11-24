@@ -7,7 +7,7 @@ from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 import antwerpen_bot as bot   # hergebruikt FACTS, get_weather, etc.
-
+import quiz
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 OWNER_ID = 35520211   # Jouw Telegram-ID
 
@@ -20,6 +20,9 @@ HELP_TEXT = (
     "/cafe - Café-tip\n"
     "/eet - Vlaamse eet-tip\n"
     "/woorden - Antwerps dialectwoord\n"
+    "/quizvraag - Volgende quizvraag\n"
+    "/quizstand - Quizstand\n"
+    "/quizreset - Quiz opnieuw (alleen beheerder)\n"
     "/bug - Fout melden bij de beheerder"
 )
 
@@ -128,7 +131,7 @@ def get_news():
         print(f"[DEBUG] Nieuws ophalen MISLUKT: {e}")
         return "Nieuwsdienst lijkt plat. Rustig land, Vlaanderen."
         
-def answer(text):
+def answer(text, chat_id=None, msg=None):
     """Vertaalt commando naar antwoord."""
     cmd = text.strip().split()[0].split("@")[0].lower()
 
@@ -170,7 +173,17 @@ def answer(text):
 
     if cmd == "/woorden":
         return get_woord()
+    if cmd == "/quizvraag":
+        return quiz.next_question(chat_id, msg.get("from", {}))
 
+    if cmd == "/quizstand":
+        return quiz.standings_text()
+
+    if cmd == "/quizreset":
+        if str(msg.get("from", {}).get("id")) != quiz.ADMIN_ID:
+            return "Helaas. Resetten mag alleen de beheerder. Ga zelf even kijken bij de quiz."
+        return quiz.reset_state()
+        
     if cmd in ("/help", "/start"):
         return HELP_TEXT
 
@@ -184,13 +197,16 @@ def main():
 
     updates = data.get("result", [])
     for upd in updates:
+        if "callback_query" in upd:
+            quiz.handle_callback(upd["callback_query"])
+            continue
         msg = upd.get("message") or {}
         chat_id = msg.get("chat", {}).get("id")
         text = (msg.get("text") or "").strip()
         if not text.startswith("/") or chat_id is None:
             continue
         
-        reply = answer(text)
+        reply = answer(text, chat_id, msg)
 
         # Bug-melding: privé naar Stan
         if text.startswith("/bug"):
