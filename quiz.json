@@ -137,32 +137,32 @@
       "editie": "ochtend",
       "categorie": "Foto",
       "vraag": "FOTOVRAAG: op welke plek is deze foto genomen?",
-      "opties": ["Te vervangen door optie 1", "Te vervangen door optie 2", "Te vervangen door optie 3", "Te vervangen door optie 4"],
-      "juist": 0,
-      "uitleg": "Jouw uitleg hier.",
-      "foto": "VUL_PAD_IN_BIJVOORBEELD_photos/dispuut_01.jpg"
+      "opties": ["Baarle-Nassau", "Tilburg", "Breda", "Odiliapeel"],
+      "juist": 3,
+      "uitleg": "Barbecue les in 2016!",
+      "foto": "antwerpen-bot/2016-10-22 17.19.58-X2.jpg"
     },
     {
       "id": 12,
       "dag": 6,
       "editie": "avond",
       "categorie": "Foto",
-      "vraag": "FOTOVRAAG: wie hangt hier het affaire-beleid uit? (prijsvraag)",
-      "opties": ["Te vervangen", "Te vervangen", "Te vervangen", "Te vervangen"],
-      "juist": 0,
-      "uitleg": "Jouw uitleg hier.",
-      "foto": "VUL_PAD_IN_BIJVOORBEELD_photos/dispuut_02.jpg"
+      "vraag": "FOTOVRAAG: Waar hadden Stan en Erik hun inauguratie?",
+      "opties": ["Ardennen, "Maastricht", "Kampen", "Cuijk"],
+      "juist": 3,
+      "uitleg": "In het huis van Anton's ouders. Stan had er echt zin in zie je hier :)",
+      "foto": "antwerpen-bot/DSC00021.jpg"
     },
     {
       "id": 13,
       "dag": 7,
       "editie": "ochtend",
       "categorie": "Foto",
-      "vraag": "FOTOVRAAG: welk jaar is deze foto?",
-      "opties": ["Te vervangen", "Te vervangen", "Te vervangen", "Te vervangen"],
-      "juist": 0,
-      "uitleg": "Jouw uitleg hier.",
-      "foto": "VUL_PAD_IN_BIJVOORBEELD_photos/dispuut_03.jpg"
+      "vraag": "FOTOVRAAG: Wat is het grootste verschil (naast leeftijd) bij JP, Stan en Joost in 2004?",
+      "opties": ["baardgroei", "aantal gewonnen potjes poker", "totaal aantal kilo", "kledingstijl"],
+      "juist": 1,
+      "uitleg": "Check die gladde koppies. Pokerwinst gaat nog altijd naar Joost en kledingstijl is voorgeschreven...",
+      "foto": "antwerpen-bot/Heerenweekend_16_18_april_2004_23.jpg"
     },
     {
       "id": 14,
